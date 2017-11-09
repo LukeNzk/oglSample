@@ -1,0 +1,3 @@
+x64_Debug, x64_Release
+deploy/gtest-mdd.lib; deploy/gtest_main-mdd.lib;
+deploy/gtest-md.lib; deploy/gtest_main-md.lib;
