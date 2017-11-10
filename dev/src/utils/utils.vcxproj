@@ -19,9 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="public\absolutePath.h" />
+    <ClInclude Include="public\fileStream.h" />
+    <ClInclude Include="public\fileUtils.h" />
+    <ClInclude Include="public\hash.h" />
+    <ClInclude Include="public\macros.h" />
+    <ClInclude Include="public\stream.h" />
     <ClInclude Include="public\types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="private\absolutePath.cpp" />
+    <ClCompile Include="private\fileStream.cpp" />
+    <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\types.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
