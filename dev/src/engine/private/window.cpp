@@ -1,13 +1,14 @@
 #include "window.h"
 #include "inputCodes.h"
+#include "graphics.h"
 #include "input.h"
-#include "../../utils/public/debug.h"
 
+#include "../../utils/public/debug.h"
 #include "../../utils/public/wndincl.h"
 
 namespace Input
 {
-	IInputManager* GInputManagerInterface = nullptr;
+	IInputManager* GInputManager = nullptr;
 }
 
 void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
@@ -25,8 +26,8 @@ void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
 		eventData = ( void* )&wParam;
 	}
 
-	if ( Input::GInputManagerInterface )
-		Input::GInputManagerInterface->DispatchEvent( evnt, eventData );
+	if ( Input::GInputManager )
+		Input::GInputManager->DispatchEvent( evnt, eventData );
 }
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
@@ -42,6 +43,7 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 		Debug::SCDebug::Info( "Window created" );
 		break;
 	case WM_SIZE:
+		graphics::ResizeViewport( LOWORD( lparam ), HIWORD( lparam ) );
 		break;
 	case WM_KEYUP:
 		evnt = ERIEventType::RIE_UP;
@@ -110,7 +112,7 @@ CWindow::CWindow()
 
 CWindow::CWindow( Input::IInputManager* inputManager )
 {
-	Input::GInputManagerInterface = inputManager;
+	Input::GInputManager = inputManager;
 }
 
 bool CWindow::Create( Uint32 width, Uint32 height )
@@ -127,6 +129,7 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 	//LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
 	//wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	wc.hCursor = LoadCursor( NULL, IDC_ARROW );
 	wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
 
@@ -143,12 +146,27 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 		return false;
 	}
 
+	RECT wndRect;
+	{
+		wndRect.left = 0;
+		wndRect.top = 0;
+		wndRect.right = width;
+		wndRect.bottom = height;
+
+		const DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;           // Window Extended Style
+		const DWORD dwStyle = WS_OVERLAPPEDWINDOW;                            // Windows Style
+
+		AdjustWindowRectEx( &wndRect, dwStyle, FALSE, dwExStyle );
+	}
+
 	m_hWnd = ( void* )CreateWindowEx(
 		0L,
 		"MainWindow",
 		"Main window",
-		CS_OWNDC,
-		520, 20, m_width, m_height,
+		WS_OVERLAPPED,
+		520, 20, 
+		wndRect.right - wndRect.left, 
+		wndRect.bottom - wndRect.top,
 		consoleHWND,
 		NULL,
 		reinterpret_cast< HINSTANCE >( m_hInstance ),
