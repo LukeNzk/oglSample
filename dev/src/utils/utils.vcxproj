@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="public\absolutePath.h" />
+    <ClInclude Include="public\debug.h" />
     <ClInclude Include="public\fileStream.h" />
     <ClInclude Include="public\fileUtils.h" />
     <ClInclude Include="public\hash.h" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\absolutePath.cpp" />
+    <ClCompile Include="private\debug.cpp" />
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\types.cpp" />

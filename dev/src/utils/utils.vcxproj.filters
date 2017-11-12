@@ -12,6 +12,7 @@
     <ClInclude Include="public\wndincl.h" />
     <ClInclude Include="public\input.h" />
     <ClInclude Include="public\inputCodes.h" />
+    <ClInclude Include="public\debug.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\types.cpp" />
@@ -19,5 +20,6 @@
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\window.cpp" />
+    <ClCompile Include="private\debug.cpp" />
   </ItemGroup>
 </Project>
