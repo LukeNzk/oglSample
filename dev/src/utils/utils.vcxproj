@@ -23,15 +23,20 @@
     <ClInclude Include="public\fileStream.h" />
     <ClInclude Include="public\fileUtils.h" />
     <ClInclude Include="public\hash.h" />
+    <ClInclude Include="public\input.h" />
+    <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="public\macros.h" />
     <ClInclude Include="public\stream.h" />
     <ClInclude Include="public\types.h" />
+    <ClInclude Include="public\window.h" />
+    <ClInclude Include="public\wndincl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\absolutePath.cpp" />
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\types.cpp" />
+    <ClCompile Include="private\window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{38462D97-29BF-4A67-B808-4202CF2C74A9}</ProjectGuid>
