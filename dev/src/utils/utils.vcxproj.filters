@@ -8,10 +8,7 @@
     <ClInclude Include="public\hash.h" />
     <ClInclude Include="public\macros.h" />
     <ClInclude Include="public\stream.h" />
-    <ClInclude Include="public\window.h" />
     <ClInclude Include="public\wndincl.h" />
-    <ClInclude Include="public\input.h" />
-    <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="public\debug.h" />
   </ItemGroup>
   <ItemGroup>
@@ -19,7 +16,6 @@
     <ClCompile Include="private\absolutePath.cpp" />
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
-    <ClCompile Include="private\window.cpp" />
     <ClCompile Include="private\debug.cpp" />
   </ItemGroup>
 </Project>

@@ -3,9 +3,15 @@
   <ItemGroup>
     <ClInclude Include="public\engine.h" />
     <ClInclude Include="private\renderer.h" />
+    <ClInclude Include="private\graphics.h" />
+    <ClInclude Include="private\window.h" />
+    <ClInclude Include="public\input.h" />
+    <ClInclude Include="public\inputCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\renderer.cpp" />
     <ClCompile Include="private\engine.cpp" />
+    <ClCompile Include="private\graphics.cpp" />
+    <ClCompile Include="private\window.cpp" />
   </ItemGroup>
 </Project>

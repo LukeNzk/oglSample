@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "../../utils/public/types.h"
 
 namespace Input
 {
@@ -22,4 +22,6 @@ public:
 	CWindow( Input::IInputManager* inputManager );
 	Bool Create( Uint32 width, Uint32 height );
 	void Tick();
+
+	const void* const GetNativeHandle() const { return m_hWnd; }
 };

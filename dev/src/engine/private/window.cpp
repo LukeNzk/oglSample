@@ -1,13 +1,9 @@
 #include "window.h"
 #include "inputCodes.h"
 #include "input.h"
+#include "../../utils/public/debug.h"
 
-namespace WIN_API
-{
-#include "wndincl.h"
-};
-
-using namespace WIN_API;
+#include "../../utils/public/wndincl.h"
 
 namespace Input
 {
@@ -35,7 +31,6 @@ void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-	extern void ProcessRawInput( Uint32 message, ERIEventType wParam );
 	static ERIEventType evnt = ERIEventType::RIE_UNKNOWN;
 	static Uint32 parameter = 0;
 	static Bool inputProcessed = false;
@@ -43,6 +38,11 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 	switch ( message )
 	{
 		//KEY
+	case WM_CREATE:
+		Debug::SCDebug::Info( "Window created" );
+		break;
+	case WM_SIZE:
+		break;
 	case WM_KEYUP:
 		evnt = ERIEventType::RIE_UP;
 		parameter = static_cast< Uint32 >( wparam );
@@ -143,11 +143,11 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 		return false;
 	}
 
-	m_hWnd = ( void* )WIN_API::CreateWindowEx(
+	m_hWnd = ( void* )CreateWindowEx(
 		0L,
 		"MainWindow",
 		"Main window",
-		WS_OVERLAPPEDWINDOW,
+		CS_OWNDC,
 		520, 20, m_width, m_height,
 		consoleHWND,
 		NULL,
