@@ -29,16 +29,17 @@ void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
 		eventData = ( void* )&wParam;
 	}
 
-	Input::GInputManagerInterface->DispatchEvent( evnt, eventData );
+	if ( Input::GInputManagerInterface )
+		Input::GInputManagerInterface->DispatchEvent( evnt, eventData );
 }
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-	extern void ProcessRawInput( Uint32 message, Uint32 wParam );
+	extern void ProcessRawInput( Uint32 message, ERIEventType wParam );
 	static ERIEventType evnt = ERIEventType::RIE_UNKNOWN;
 	static Uint32 parameter = 0;
 	static Bool inputProcessed = false;
-	
+
 	switch ( message )
 	{
 		//KEY
@@ -98,14 +99,13 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 	}
 
 	if ( inputProcessed )
-		ProcessRawInput( parameter, static_cast< Uint32 >( evnt ) );
+		ProcessRawInput( parameter, evnt );
 
 	return DefWindowProc( hwnd, message, wparam, lparam );
 }
 
 CWindow::CWindow()
 {
-
 }
 
 CWindow::CWindow( Input::IInputManager* inputManager )
@@ -113,8 +113,11 @@ CWindow::CWindow( Input::IInputManager* inputManager )
 	Input::GInputManagerInterface = inputManager;
 }
 
-bool CWindow::Create()
+bool CWindow::Create( Uint32 width, Uint32 height )
 {
+	m_width = width;
+	m_height = height;
+
 	m_hInstance = GetModuleHandle( 0 );
 
 	HINSTANCE hInstance = reinterpret_cast< HINSTANCE >( m_hInstance );
@@ -128,8 +131,7 @@ bool CWindow::Create()
 	wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
 
 	wc.hInstance = hInstance;
-	if ( Input::GInputManagerInterface )
-		wc.lpfnWndProc = WindowProc;
+	wc.lpfnWndProc = WindowProc;
 
 	wc.lpszClassName = TEXT( "MainWindow" );
 	//wc.style = CS_HREDRAW | CS_VREDRAW;

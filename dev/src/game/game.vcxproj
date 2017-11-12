@@ -122,7 +122,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="mainGame.cpp" />
+    <ClCompile Include="src\inputManager.cpp" />
+    <ClCompile Include="src\mainGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\engine.vcxproj">
@@ -131,6 +132,9 @@
     <ProjectReference Include="..\utils\utils.vcxproj">
       <Project>{38462d97-29bf-4a67-b808-4202cf2c74a9}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\inputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -122,9 +122,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="public\renderer.h" />
+    <ClInclude Include="public\engine.h" />
+    <ClInclude Include="private\renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="private\engine.cpp" />
     <ClCompile Include="private\renderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

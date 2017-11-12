@@ -14,12 +14,12 @@ private:
 	void* m_hInstance;
 	void* m_hWnd;
 
-	int m_width = 800;
-	int m_height = 600;
+	int m_width;
+	int m_height;
 
 public:
 	CWindow();
 	CWindow( Input::IInputManager* inputManager );
-	Bool Create();
+	Bool Create( Uint32 width, Uint32 height );
 	void Tick();
 };
