@@ -122,6 +122,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="private\glExtenstions.h" />
     <ClInclude Include="private\graphics.h" />
     <ClInclude Include="private\window.h" />
     <ClInclude Include="public\engine.h" />
@@ -131,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\engine.cpp" />
+    <ClCompile Include="private\glExtenstions.cpp" />
     <ClCompile Include="private\graphics.cpp" />
     <ClCompile Include="private\renderer.cpp" />
     <ClCompile Include="private\window.cpp" />

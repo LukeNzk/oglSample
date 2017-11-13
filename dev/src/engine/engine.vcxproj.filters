@@ -7,11 +7,13 @@
     <ClInclude Include="private\window.h" />
     <ClInclude Include="public\input.h" />
     <ClInclude Include="public\inputCodes.h" />
+    <ClInclude Include="private\glExtenstions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\renderer.cpp" />
     <ClCompile Include="private\engine.cpp" />
     <ClCompile Include="private\graphics.cpp" />
     <ClCompile Include="private\window.cpp" />
+    <ClCompile Include="private\glExtenstions.cpp" />
   </ItemGroup>
 </Project>

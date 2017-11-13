@@ -41,6 +41,7 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 		//KEY
 	case WM_CREATE:
 		Debug::SCDebug::Info( "Window created" );
+		graphics::Init( hwnd );
 		break;
 	case WM_SIZE:
 		graphics::ResizeViewport( LOWORD( lparam ), HIWORD( lparam ) );
