@@ -12,16 +12,15 @@ void Renderer::Init()
 {
 	graphics::GenerateVertexArraysObject();
 
-	const Float verts[] =
-	{
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f,  1.0f, 0.0f
+	float verts[] = {
+		0.0f,  0.5f,  0.0f,
+		0.5f, -0.5f,  0.0f,
+		-0.5f, -0.5f,  0.0f
 	};
 
 	bufferId = graphics::CreateArrayBuffer();
 	graphics::BindArrayBuffer( bufferId );
-	graphics::LoadStaticBufferData( bufferId, 9, verts );
+	graphics::LoadStaticBufferData( bufferId, 9 * sizeof( Float ), verts );
 
 	Uint32 vShader = graphics::LoadShader( "D:\\vertex.hlsl", true );
 	Uint32 fShader = graphics::LoadShader( "D:\\fragm.hlsl", false );
@@ -29,11 +28,11 @@ void Renderer::Init()
 
 	graphics::DeleteShader( vShader );
 	graphics::DeleteShader( fShader );
+	graphics::SetClearColor( 0.5f, 0.5f, 0.5f, 1 );
 }
 
 void Renderer::Draw()
 {
-	graphics::SetClearColor( 0.5f, 0.5f, 0.5f, 1 );
 	graphics::ClearColorAndDepth();
 
 	graphics::UseProgram( gpuProg );
