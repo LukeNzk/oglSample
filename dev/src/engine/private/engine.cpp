@@ -17,6 +17,8 @@ void Engine::Init()
 	m_window.reset( new CWindow() );
 	m_window->Create( 800, 600 );
 
+	graphics::Init( m_window->GetNativeHandle() );
+
 	m_renderer.reset( new Renderer() );
 	m_renderer->Init();
 }

@@ -14,6 +14,7 @@ namespace graphics
 	extern void BindArrayBuffer( Uint32 gid );
 	extern void LoadStaticBufferData( Uint32 gid, Uint32 n, const Float* data );
 	extern void DrawVertexBuffer( Uint32 gid );
+	extern Uint32 GenerateVertexArraysObject();
 
 	extern Uint32 LoadShader( const AnsiChar* path, Bool vertex );
 	extern Uint32 CreateProgram( Uint32 vertexShader, Uint32 fragmentShader );

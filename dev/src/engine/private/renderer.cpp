@@ -10,6 +10,8 @@ Uint32 gpuProg;
 
 void Renderer::Init()
 {
+	graphics::GenerateVertexArraysObject();
+
 	const Float verts[] =
 	{
 		-1.0f, -1.0f, 0.0f,

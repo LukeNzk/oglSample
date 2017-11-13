@@ -23,5 +23,5 @@ public:
 	Bool Create( Uint32 width, Uint32 height );
 	void Tick();
 
-	const void* const GetNativeHandle() const { return m_hWnd; }
+	void* GetNativeHandle() { return m_hWnd; }
 };

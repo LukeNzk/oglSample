@@ -96,7 +96,7 @@ namespace graphics
 			WGL_SUPPORT_OPENGL_ARB, TRUE,
 			WGL_DRAW_TO_WINDOW_ARB, TRUE,
 			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-			WGL_COLOR_BITS_ARB, 32,
+			WGL_COLOR_BITS_ARB, 24,
 			WGL_DEPTH_BITS_ARB, 24,
 			WGL_DOUBLE_BUFFER_ARB, TRUE,
 			WGL_SWAP_METHOD_ARB, WGL_SWAP_EXCHANGE_ARB,
@@ -119,7 +119,7 @@ namespace graphics
 		Int32 glAttributes[ 5 ] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 5,
 			0
 		};
 
@@ -164,50 +164,77 @@ namespace graphics
 
 	void ClearColorAndDepth()
 	{
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		SC_ASSERT( glGetError() == 0, "Failed to clear color or depth buffer." );
 	}
 
 	void SetClearColor( Float r, Float g, Float b, Float a )
 	{
 		glClearColor( r, g, b, a );
+		SC_ASSERT( glGetError() == 0, "Failed to set clear color." );
 	}
 	
 	void SwapBuffers()
 	{
 		SwapBuffers( gDeviceContext );
+		SC_ASSERT( glGetError() == 0, "Failed to swap buffers." );
 	}
 
 	Uint32 CreateArrayBuffer()
 	{
 		GLuint buffer = 0;
 		glGenBuffers( 1, &buffer );
+		SC_ASSERT( glGetError() == 0, "Failed to generate array buffer." );
 		return buffer;
 	}
 
 	void BindArrayBuffer( Uint32 gid )
 	{
 		glBindBuffer( GL_ARRAY_BUFFER, gid );
+		SC_ASSERT( glGetError() == 0, "Failed binding array buffer." );
 	}
 
 	void LoadStaticBufferData( Uint32 gid, Uint32 n, const Float* data )
 	{
 		glBufferData( GL_ARRAY_BUFFER, n, data, GL_STATIC_DRAW );
+		SC_ASSERT( glGetError() == 0, "Failed setting array buffer data." );
+	}
+
+	Uint32 GenerateVertexArraysObject()
+	{
+		GLuint vao = 0;
+
+		Uint32 error = 0;
+		glGenVertexArrays( 1, &vao );
+		SC_ASSERT( glGetError() == 0, "Failed to generate VAO." );
+
+		glBindVertexArray( vao );
+		SC_ASSERT( glGetError() == 0, "Failed to bind VAO." );
+
+		return vao;
 	}
 
 	void DrawVertexBuffer( Uint32 gid )
 	{
 		glEnableVertexAttribArray( 0 );
-		glBindBuffer( GL_ARRAY_BUFFER, gid );
+		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
+
+		BindArrayBuffer( gid );
+
 		glVertexAttribPointer(
 			0,
 			3,
 			GL_FLOAT,
 			GL_FALSE,
 			0,
-			0 );
+			(void*)0 );
+		SC_ASSERT( glGetError() == 0, "Failed to initialize vertex attrib pointer." );
 
 		glDrawArrays( GL_TRIANGLES, 0, 3 );
+		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
+
 		glDisableVertexAttribArray( 0 );
+		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
 	}
 
 	Uint32 LoadShader( const AnsiChar* path, Bool vertex )
@@ -218,7 +245,7 @@ namespace graphics
 		fs->Read( code, size );
 		code[ size ] = 0;
 
-		// create shader shader
+		// create shader
 		const Uint32 shaderType = ( vertex ) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
 		const GLuint shaderId = glCreateShader( shaderType );
 
@@ -251,6 +278,7 @@ namespace graphics
 		Uint32 program = glCreateProgram();
 		glAttachShader( program, vertexShader );
 		glAttachShader( program, fragmentShader );
+
 		glLinkProgram( program );
 
 		// validate shader
