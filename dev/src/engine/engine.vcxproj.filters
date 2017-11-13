@@ -8,6 +8,8 @@
     <ClInclude Include="public\input.h" />
     <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="private\glExtenstions.h" />
+    <ClInclude Include="public\sprite.h" />
+    <ClInclude Include="private\shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\renderer.cpp" />
@@ -15,5 +17,7 @@
     <ClCompile Include="private\graphics.cpp" />
     <ClCompile Include="private\window.cpp" />
     <ClCompile Include="private\glExtenstions.cpp" />
+    <ClCompile Include="private\sprite.cpp" />
+    <ClCompile Include="private\shader.cpp" />
   </ItemGroup>
 </Project>

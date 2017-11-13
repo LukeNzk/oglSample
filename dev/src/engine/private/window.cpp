@@ -164,7 +164,7 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 		0L,
 		"MainWindow",
 		"Main window",
-		WS_OVERLAPPED,
+		WS_OVERLAPPEDWINDOW,
 		520, 20, 
 		wndRect.right - wndRect.left, 
 		wndRect.bottom - wndRect.top,

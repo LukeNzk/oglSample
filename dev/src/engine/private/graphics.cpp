@@ -4,7 +4,14 @@
 #include "glExtenstions.h"
 
 #include "../../utils/public/macros.h"
+#include "../../utils/public/types.h"
+#include "../../utils/public/fileStream.h"
+#include "../../utils/public/fileUtils.h"
+
 #include "window.h"
+
+#include <string.h>
+#include <memory>
 
 #define WGL_DRAW_TO_WINDOW_ARB         0x2001
 #define WGL_ACCELERATION_ARB           0x2003
@@ -111,8 +118,8 @@ namespace graphics
 
 		Int32 glAttributes[ 5 ] =
 		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
 			0
 		};
 
@@ -157,7 +164,7 @@ namespace graphics
 
 	void ClearColorAndDepth()
 	{
-		glClear( GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT );
 	}
 
 	void SetClearColor( Float r, Float g, Float b, Float a )
@@ -168,5 +175,110 @@ namespace graphics
 	void SwapBuffers()
 	{
 		SwapBuffers( gDeviceContext );
+	}
+
+	Uint32 CreateArrayBuffer()
+	{
+		GLuint buffer = 0;
+		glGenBuffers( 1, &buffer );
+		return buffer;
+	}
+
+	void BindArrayBuffer( Uint32 gid )
+	{
+		glBindBuffer( GL_ARRAY_BUFFER, gid );
+	}
+
+	void LoadStaticBufferData( Uint32 gid, Uint32 n, const Float* data )
+	{
+		glBufferData( GL_ARRAY_BUFFER, n, data, GL_STATIC_DRAW );
+	}
+
+	void DrawVertexBuffer( Uint32 gid )
+	{
+		glEnableVertexAttribArray( 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, gid );
+		glVertexAttribPointer(
+			0,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			0,
+			0 );
+
+		glDrawArrays( GL_TRIANGLES, 0, 3 );
+		glDisableVertexAttribArray( 0 );
+	}
+
+	Uint32 LoadShader( const AnsiChar* path, Bool vertex )
+	{
+		std::unique_ptr< sc::FileStream > fs( sc::FileStream::Open( path ) );
+		const Uint32 size = fs->GetSize();
+		AnsiChar* code = new AnsiChar[ size + 1 ];
+		fs->Read( code, size );
+		code[ size ] = 0;
+
+		// create shader shader
+		const Uint32 shaderType = ( vertex ) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
+		const GLuint shaderId = glCreateShader( shaderType );
+
+		// compile shader
+		const Int8* codePtr = reinterpret_cast< Int8* >( code );
+		glShaderSource( shaderId, 1, &codePtr, NULL );
+		glCompileShader( shaderId );
+
+		Int32 noErr = 0;
+		glGetShaderiv( shaderId, GL_COMPILE_STATUS, &noErr );
+		
+		Int32 logLength;
+		glGetShaderiv( shaderId, GL_INFO_LOG_LENGTH, &logLength );
+		if ( logLength > 0 )
+		{
+			Int8* log = new Int8[ logLength ];
+			glGetShaderInfoLog( shaderId, logLength, NULL, log );
+			SC_ASSERT( false, log );
+
+			delete[] log;
+		}
+
+		delete[] code;
+
+		return shaderId;
+	}
+
+	Uint32 CreateProgram( Uint32 vertexShader, Uint32 fragmentShader )
+	{
+		Uint32 program = glCreateProgram();
+		glAttachShader( program, vertexShader );
+		glAttachShader( program, fragmentShader );
+		glLinkProgram( program );
+
+		// validate shader
+		Int32 noError;
+		Int32 logLength;
+		glGetProgramiv( program, GL_LINK_STATUS, &noError );
+		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
+		if ( logLength > 0 ) {
+			Int8* log = new Int8[ logLength ];
+			glGetShaderInfoLog( program, logLength, NULL, log );
+			SC_ASSERT( false, log );
+
+			delete[] log;
+		}
+
+		glDetachShader( program, vertexShader );
+		glDetachShader( program, fragmentShader );
+
+		return program;
+	}
+
+	void UseProgram( Uint32 program )
+	{
+		glUseProgram( program );
+	}
+
+	void DeleteShader( Uint32 shader )
+	{
+		glDeleteShader( shader );
 	}
 }

@@ -49,7 +49,7 @@ namespace sc
 			NULL
 			);
 
-		SC_ASSERT( errorFlag, "Failed to write file." );
+		SC_ASSERT( errorFlag, "Failed to read file." );
 		SC_ASSERT( ( Uint32 )bytesRead == size, "Incomplete read." );
 
 		m_off += size;

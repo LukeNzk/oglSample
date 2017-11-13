@@ -3,5 +3,6 @@
 class Renderer
 {
 public:
+	void Init();
 	void Draw();
 };
