@@ -25,6 +25,7 @@
     <ClInclude Include="public\fileUtils.h" />
     <ClInclude Include="public\hash.h" />
     <ClInclude Include="public\macros.h" />
+    <ClInclude Include="public\matrix.h" />
     <ClInclude Include="public\stream.h" />
     <ClInclude Include="public\types.h" />
     <ClInclude Include="public\vector2.h" />

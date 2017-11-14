@@ -7,6 +7,7 @@
 #include "../../utils/public/types.h"
 #include "../../utils/public/fileStream.h"
 #include "../../utils/public/fileUtils.h"
+#include "../../utils/public/matrix.h"
 
 #include "window.h"
 
@@ -312,6 +313,7 @@ namespace graphics
 		return program;
 	}
 
+
 	void UseProgram( Uint32 program )
 	{
 		glUseProgram( program );
@@ -322,9 +324,23 @@ namespace graphics
 		glDeleteShader( shader );
 	}
 
+	Uint32 GetUniformLocation( Uint32 program, const AnsiChar* name )
+	{
+		const Uint32 result = glGetUniformLocation( program, name );
+		SC_ASSERT( glGetError() == 0, "Failed to get unifrom location [%s].", name );
+		SC_ASSERT( result != 0xffffffff, "Failed to get unifrom location [%s].", name );
+		return result;
+	}
+
 	void SetUniform1f( Uint32 location, Float value )
 	{
 		glUniform1f( location, value );
 		SC_ASSERT( glGetError() == 0, "Failed to set float unifrom." );
+	}
+
+	void SetUniformMatrix( Uint32 location, const Float* matrix )
+	{
+		glUniformMatrix4fv( location, 1, GL_FALSE, matrix );
+		SC_ASSERT( glGetError() == 0, "Failed to set matrix unifrom." );
 	}
 }

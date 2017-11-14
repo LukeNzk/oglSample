@@ -2,6 +2,7 @@
 #include "../../utils/public/types.h"
 #include "../../utils/public/absolutePath.h"
 #include "../../utils/public/fileUtils.h"
+#include "../../utils/public/matrix.h"
 
 #include "graphics.h"
 
@@ -42,6 +43,15 @@ void Renderer::Init()
 	graphics::DeleteShader( vShader );
 	graphics::DeleteShader( fShader );
 	graphics::SetClearColor( 0.5f, 0.5f, 0.5f, 1 );
+
+	graphics::UseProgram( gpuProg );
+
+	const Matrix projection = Matrix::CreateOrthoProj( -1.33f, -1.0, 1.33f, 1.0f, 0.1f, 100.0f );
+	const Uint32 projectionLocation = graphics::GetUniformLocation( gpuProg, "proj" );
+	graphics::SetUniformMatrix( projectionLocation, projection.GetData() );
+
+	const Uint32 rotationLocation = graphics::GetUniformLocation( gpuProg, "rot" );
+	graphics::SetUniform1f( rotationLocation, 0.2f );
 }
 
 void Renderer::Draw()

@@ -21,5 +21,8 @@ namespace graphics
 	extern Uint32 CreateProgram( Uint32 vertexShader, Uint32 fragmentShader );
 	extern void UseProgram( Uint32 program );
 	extern void DeleteShader( Uint32 shader );
+
+	extern Uint32 GetUniformLocation( Uint32 program, const AnsiChar* name );
 	extern void SetUniform1f( Uint32 location, Float value );
+	extern void SetUniformMatrix( Uint32 location, const Float* matrix );
 }
