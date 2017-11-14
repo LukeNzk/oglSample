@@ -1,6 +1,6 @@
 #include "debug.h"
 
-#include <windows.h>
+#include "wndincl.h"
 
 namespace Debug
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include "../../utils/public/types.h"
 #include "../../utils/public/macros.h"
+#include "../../utils/public/wndincl.h"
 
-#include <windows.h>
 #include <gl/GL.h>
 
 typedef BOOL( WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC ) ( HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats,

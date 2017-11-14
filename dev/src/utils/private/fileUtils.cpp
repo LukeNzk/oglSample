@@ -2,8 +2,7 @@
 #include "macros.h"
 #include "fileUtils.h"
 #include "absolutePath.h"
-
-#include <windows.h>
+#include "wndincl.h"
 
 namespace sc
 {

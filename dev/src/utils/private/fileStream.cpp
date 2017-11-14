@@ -1,8 +1,7 @@
 #include "types.h"
 #include "macros.h"
 #include "fileStream.h"
-
-#include <windows.h>
+#include "wndincl.h"
 
 namespace sc
 {

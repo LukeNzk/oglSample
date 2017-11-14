@@ -68,6 +68,32 @@ namespace Debug
 
 #else
 
+namespace Debug
+{
+	class SCDebug
+	{
+	public:
+		template<typename... Args>
+		static void Info( char* messageFormat, Args... args )
+		{
+		}
+
+		template<typename... Args>
+		static void Warning( const AnsiChar* messageFormat, Args... args )
+		{
+		}
+
+		template<typename... Args>
+		static void Error( const AnsiChar* messageFormat, Args... args )
+		{
+		}
+
+		template<typename... Args>
+		static void AssertWindow( const AnsiChar* messageFormat, Args... args )
+		{
+		}
+	};
+}
 #define DEBUG_INFO(x)
 #define DEBUG_WARNING(x)
 #define DEBUG_ERROR(x)
