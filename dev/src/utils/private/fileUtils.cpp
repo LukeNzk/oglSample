@@ -1,6 +1,7 @@
 #include "types.h"
 #include "macros.h"
 #include "fileUtils.h"
+#include "absolutePath.h"
 
 #include <windows.h>
 
@@ -138,5 +139,15 @@ namespace sc
 		SC_ASSERT( ptr[ endPos ] == '\\', "Can't extract directory of the executable." );
 
 		return result.substr( 0, endPos + 1 );
+	}
+
+	std::string GetResourcesDir()
+	{
+		sc::AbsolutePath path( GetExecutableDir().c_str() );
+		path.DirUp();
+		path.DirUp();
+
+		path.AppendDirectory( "assets" );
+		return path.Get();
 	}
 }

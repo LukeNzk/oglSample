@@ -1,5 +1,8 @@
 #include "renderer.h"
 #include "../../utils/public/types.h"
+#include "../../utils/public/absolutePath.h"
+#include "../../utils/public/fileUtils.h"
+
 #include "graphics.h"
 
 #include <stdio.h>
@@ -22,8 +25,17 @@ void Renderer::Init()
 	graphics::BindArrayBuffer( bufferId );
 	graphics::LoadStaticBufferData( bufferId, 9 * sizeof( Float ), verts );
 
-	Uint32 vShader = graphics::LoadShader( "D:\\vertex.hlsl", true );
-	Uint32 fShader = graphics::LoadShader( "D:\\fragm.hlsl", false );
+	const sc::AbsolutePath shadersDir( sc::GetResourcesDir().c_str() );
+
+	sc::AbsolutePath vShaderFile( shadersDir );
+	vShaderFile.SetFile( "vertex.glsl" );
+
+	sc::AbsolutePath fShaderFile( shadersDir );
+	fShaderFile.SetFile( "fragm.glsl" );
+
+	Uint32 vShader = graphics::LoadShader( vShaderFile.Get(), true );
+	Uint32 fShader = graphics::LoadShader( fShaderFile.Get(), false );
+
 	gpuProg = graphics::CreateProgram( vShader, fShader );
 
 	graphics::DeleteShader( vShader );

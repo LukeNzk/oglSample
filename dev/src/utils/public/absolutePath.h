@@ -1,4 +1,5 @@
 #pragma once
+#include "types.h"
 
 #include <string>
 #include <memory>
@@ -15,6 +16,8 @@ namespace sc
 		const char* GetFileName() const;
 		void AppendDirectory( const char* dirName );
 		void SetFile( const char* fileName );
+		const AnsiChar* Get() const { return m_path.c_str(); };
+		void DirUp();
 
 	private:
 		void Reparse();

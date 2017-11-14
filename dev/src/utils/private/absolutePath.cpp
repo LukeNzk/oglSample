@@ -76,7 +76,8 @@ namespace sc
 				dirStr.append( "\\" );
 			}
 
-			m_path.append( dirName );
+			m_path.append( dirStr.c_str() );
+			SC_ASSERT( IsDirectory(), "Invalid directory name appended." );
 		}
 		else
 		{
@@ -89,10 +90,29 @@ namespace sc
 		if ( IsDirectory() )
 		{
 			m_path.append( fileName );
+			Reparse();
 		}
 		else
 		{
 			SC_ASSERT( false, "File name can be only set for a directory path." );
+		}
+	}
+
+	void AbsolutePath::DirUp()
+	{
+		if (IsDirectory())
+		{
+			const Uint32 len = static_cast< Uint32 >( m_path.length() );
+			SC_ASSERT( len > 1, "" );
+
+			for ( int i = len - 2; i >= 0; --i )
+			{
+				if ( m_path[i] == '/' || m_path[i] == '\\' )
+				{
+					m_path.resize( i + 1 );
+					break;
+				}
+			}
 		}
 	}
 

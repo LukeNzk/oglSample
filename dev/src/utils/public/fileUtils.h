@@ -31,4 +31,6 @@ namespace sc
 
 	// directory of current executable
 	std::string GetExecutableDir();
+
+	std::string GetResourcesDir();
 }
