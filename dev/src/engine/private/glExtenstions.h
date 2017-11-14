@@ -39,6 +39,7 @@ typedef GLint( APIENTRY * PFNGLGETUNIFORMLOCATIONPROC ) ( GLuint program, const 
 typedef void ( APIENTRY * PFNGLUNIFORMMATRIX4FVPROC ) ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value );
 typedef void ( APIENTRY * PFNGLACTIVETEXTUREPROC ) ( GLenum texture );
 typedef void ( APIENTRY * PFNGLUNIFORM1IPROC ) ( GLint location, GLint v0 );
+typedef void ( APIENTRY * PFNGLUNIFORM1FPROC ) ( GLint location, GLfloat v0 );
 typedef void ( APIENTRY * PFNGLGENERATEMIPMAPPROC ) ( GLenum target );
 typedef void ( APIENTRY * PFNGLDISABLEVERTEXATTRIBARRAYPROC ) ( GLuint index );
 typedef void ( APIENTRY * PFNGLUNIFORM3FVPROC ) ( GLint location, GLsizei count, const GLfloat *value );
@@ -77,6 +78,7 @@ extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 extern PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLUNIFORM1IPROC glUniform1i;
+extern PFNGLUNIFORM1FPROC glUniform1f;
 extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
 extern PFNGLUNIFORM3FVPROC glUniform3fv;

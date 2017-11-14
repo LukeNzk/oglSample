@@ -10,6 +10,8 @@
     <ClInclude Include="public\stream.h" />
     <ClInclude Include="public\wndincl.h" />
     <ClInclude Include="public\debug.h" />
+    <ClInclude Include="public\vector4.h" />
+    <ClInclude Include="public\vector2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\types.cpp" />

@@ -33,6 +33,7 @@ PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 PFNGLACTIVETEXTUREPROC glActiveTexture;
 PFNGLUNIFORM1IPROC glUniform1i;
+PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
 PFNGLUNIFORM3FVPROC glUniform3fv;
@@ -203,6 +204,10 @@ namespace glInternal
 
 		glUniform1i = ( PFNGLUNIFORM1IPROC )wglGetProcAddress( "glUniform1i" );
 		if ( !glUniform1i )
+			return false;
+
+		glUniform1f = ( PFNGLUNIFORM1FPROC )wglGetProcAddress( "glUniform1f" );
+		if ( !glUniform1f )
 			return false;
 
 		glGenerateMipmap = ( PFNGLGENERATEMIPMAPPROC )wglGetProcAddress( "glGenerateMipmap" );

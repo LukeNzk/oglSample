@@ -16,14 +16,15 @@ void Renderer::Init()
 	graphics::GenerateVertexArraysObject();
 
 	float verts[] = {
-		0.0f,  0.5f,  0.0f,
-		0.5f, -0.5f,  0.0f,
-		-0.5f, -0.5f,  0.0f
+		-0.5f, -0.5f,
+		-0.5f,  0.5f,
+		0.5f, -0.5f,
+		0.5f, 0.5f
 	};
 
 	bufferId = graphics::CreateArrayBuffer();
 	graphics::BindArrayBuffer( bufferId );
-	graphics::LoadStaticBufferData( bufferId, 9 * sizeof( Float ), verts );
+	graphics::LoadStaticBufferData( bufferId, 8 * sizeof( Float ), verts );
 
 	const sc::AbsolutePath shadersDir( sc::GetResourcesDir().c_str() );
 
@@ -48,7 +49,7 @@ void Renderer::Draw()
 	graphics::ClearColorAndDepth();
 
 	graphics::UseProgram( gpuProg );
-	graphics::DrawVertexBuffer( bufferId );
+	graphics::DrawTriangleStrip( bufferId, 8 );
 
 	graphics::SwapBuffers();
 }

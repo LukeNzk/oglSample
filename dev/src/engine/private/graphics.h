@@ -12,12 +12,14 @@ namespace graphics
 
 	extern Uint32 CreateArrayBuffer();
 	extern void BindArrayBuffer( Uint32 gid );
-	extern void LoadStaticBufferData( Uint32 gid, Uint32 n, const Float* data );
-	extern void DrawVertexBuffer( Uint32 gid );
+	extern void LoadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data );
+	extern void DrawTriangles( Uint32 buffer, Uint32 n );
+	extern void DrawTriangleStrip( Uint32 buffer, Uint32 n );
 	extern Uint32 GenerateVertexArraysObject();
 
 	extern Uint32 LoadShader( const AnsiChar* path, Bool vertex );
 	extern Uint32 CreateProgram( Uint32 vertexShader, Uint32 fragmentShader );
 	extern void UseProgram( Uint32 program );
 	extern void DeleteShader( Uint32 shader );
+	extern void SetUniform1f( Uint32 location, Float value );
 }

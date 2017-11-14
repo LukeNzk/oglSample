@@ -188,14 +188,15 @@ namespace graphics
 		return buffer;
 	}
 
-	void BindArrayBuffer( Uint32 gid )
+	void BindArrayBuffer( Uint32 buffer )
 	{
-		glBindBuffer( GL_ARRAY_BUFFER, gid );
+		glBindBuffer( GL_ARRAY_BUFFER, buffer );
 		SC_ASSERT( glGetError() == 0, "Failed binding array buffer." );
 	}
 
-	void LoadStaticBufferData( Uint32 gid, Uint32 n, const Float* data )
+	void LoadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data )
 	{
+		BindArrayBuffer( buffer );
 		glBufferData( GL_ARRAY_BUFFER, n, data, GL_STATIC_DRAW );
 		SC_ASSERT( glGetError() == 0, "Failed setting array buffer data." );
 	}
@@ -214,17 +215,34 @@ namespace graphics
 		return vao;
 	}
 
-	void DrawVertexBuffer( Uint32 gid )
+	void DrawTriangles( Uint32 buffer, Uint32 n )
 	{
 		glEnableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
 
-		BindArrayBuffer( gid );
+		BindArrayBuffer( buffer );
 
-		glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, ( void* )0 );
+		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, ( void* )0 );
 		SC_ASSERT( glGetError() == 0, "Failed to initialize vertex attrib pointer." );
 
-		glDrawArrays( GL_TRIANGLES, 0, 3 );
+		glDrawArrays( GL_TRIANGLES, 0, 3 * n );
+		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
+
+		glDisableVertexAttribArray( 0 );
+		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
+	}
+
+	void DrawTriangleStrip( Uint32 buffer, Uint32 n )
+	{
+		glEnableVertexAttribArray( 0 );
+		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
+
+		BindArrayBuffer( buffer );
+
+		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, ( void* )0 );
+		SC_ASSERT( glGetError() == 0, "Failed to initialize vertex attrib pointer." );
+
+		glDrawArrays( GL_TRIANGLE_STRIP, 0, n );
 		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
 
 		glDisableVertexAttribArray( 0 );
@@ -302,5 +320,11 @@ namespace graphics
 	void DeleteShader( Uint32 shader )
 	{
 		glDeleteShader( shader );
+	}
+
+	void SetUniform1f( Uint32 location, Float value )
+	{
+		glUniform1f( location, value );
+		SC_ASSERT( glGetError() == 0, "Failed to set float unifrom." );
 	}
 }

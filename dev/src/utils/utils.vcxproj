@@ -27,6 +27,8 @@
     <ClInclude Include="public\macros.h" />
     <ClInclude Include="public\stream.h" />
     <ClInclude Include="public\types.h" />
+    <ClInclude Include="public\vector2.h" />
+    <ClInclude Include="public\vector4.h" />
     <ClInclude Include="public\wndincl.h" />
   </ItemGroup>
   <ItemGroup>
