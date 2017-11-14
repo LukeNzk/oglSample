@@ -338,6 +338,18 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to set float unifrom." );
 	}
 
+	void SetUniform2f( Uint32 location, const Float * value )
+	{
+		glUniform2fv( location, 1, value );
+		SC_ASSERT( glGetError() == 0, "Failed to set float3 unifrom." );
+	}
+
+	void SetUniform3f( Uint32 location, const Float* value )
+	{
+		glUniform3fv( location, 1, value );
+		SC_ASSERT( glGetError() == 0, "Failed to set float3 unifrom." );
+	}
+
 	void SetUniformMatrix( Uint32 location, const Float* matrix )
 	{
 		glUniformMatrix4fv( location, 1, GL_FALSE, matrix );

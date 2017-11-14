@@ -42,6 +42,7 @@ typedef void ( APIENTRY * PFNGLUNIFORM1IPROC ) ( GLint location, GLint v0 );
 typedef void ( APIENTRY * PFNGLUNIFORM1FPROC ) ( GLint location, GLfloat v0 );
 typedef void ( APIENTRY * PFNGLGENERATEMIPMAPPROC ) ( GLenum target );
 typedef void ( APIENTRY * PFNGLDISABLEVERTEXATTRIBARRAYPROC ) ( GLuint index );
+typedef void ( APIENTRY * PFNGLUNIFORM2FVPROC ) ( GLint location, GLsizei count, const GLfloat *value );
 typedef void ( APIENTRY * PFNGLUNIFORM3FVPROC ) ( GLint location, GLsizei count, const GLfloat *value );
 typedef void ( APIENTRY * PFNGLUNIFORM4FVPROC ) ( GLint location, GLsizei count, const GLfloat *value );
 
@@ -81,6 +82,7 @@ extern PFNGLUNIFORM1IPROC glUniform1i;
 extern PFNGLUNIFORM1FPROC glUniform1f;
 extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
+extern PFNGLUNIFORM2FVPROC glUniform2fv;
 extern PFNGLUNIFORM3FVPROC glUniform3fv;
 extern PFNGLUNIFORM4FVPROC glUniform4fv;
 

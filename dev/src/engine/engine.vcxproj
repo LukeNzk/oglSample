@@ -124,9 +124,11 @@
   <ItemGroup>
     <ClInclude Include="private\glExtenstions.h" />
     <ClInclude Include="private\graphics.h" />
+    <ClInclude Include="private\spritesRenderer.h" />
     <ClInclude Include="private\window.h" />
     <ClInclude Include="public\engine.h" />
     <ClInclude Include="private\renderer.h" />
+    <ClInclude Include="public\game.h" />
     <ClInclude Include="public\input.h" />
     <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="public\sprite.h" />
@@ -137,6 +139,7 @@
     <ClCompile Include="private\graphics.cpp" />
     <ClCompile Include="private\renderer.cpp" />
     <ClCompile Include="private\sprite.cpp" />
+    <ClCompile Include="private\spritesRenderer.cpp" />
     <ClCompile Include="private\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

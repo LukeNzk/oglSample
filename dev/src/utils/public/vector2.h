@@ -41,17 +41,17 @@ struct Vector2
 		return x * x + y * y;
 	}
 
-	inline float* GetPtr()
+	inline Float* GetPtr()
 	{
 		return &x;
 	}
 
-	inline const float*  GetPtr() const
+	inline const Float*  GetPtr() const
 	{
 		return &x;
 	}
 
-	inline float& operator[] ( Uint32 n )
+	inline Float& operator[] ( Uint32 n )
 	{
 		return ( &x )[ n ];
 	}

@@ -2,6 +2,7 @@
 #include "window.h"
 #include "graphics.h"
 #include "renderer.h"
+#include "game.h"
 
 Engine::Engine()
 	: m_quit( false )
@@ -23,11 +24,14 @@ void Engine::Init()
 	m_renderer->Init();
 }
 
-void Engine::Start()
+void Engine::Start( IGame* game )
 {
+	m_game = game;
+
 	// update loop
 	while ( !m_quit )
 	{
+		m_game->Tick( 0.0f );
 		m_window->Tick();
 		m_renderer->Draw();
 	}

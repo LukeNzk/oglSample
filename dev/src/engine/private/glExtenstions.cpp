@@ -36,6 +36,7 @@ PFNGLUNIFORM1IPROC glUniform1i;
 PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
+PFNGLUNIFORM2FVPROC glUniform2fv;
 PFNGLUNIFORM3FVPROC glUniform3fv;
 PFNGLUNIFORM4FVPROC glUniform4fv;
 
@@ -216,6 +217,10 @@ namespace glInternal
 
 		glDisableVertexAttribArray = ( PFNGLDISABLEVERTEXATTRIBARRAYPROC )wglGetProcAddress( "glDisableVertexAttribArray" );
 		if ( !glDisableVertexAttribArray )
+			return false;
+
+		glUniform2fv = ( PFNGLUNIFORM3FVPROC )wglGetProcAddress( "glUniform2fv" );
+		if ( !glUniform2fv )
 			return false;
 
 		glUniform3fv = ( PFNGLUNIFORM3FVPROC )wglGetProcAddress( "glUniform3fv" );

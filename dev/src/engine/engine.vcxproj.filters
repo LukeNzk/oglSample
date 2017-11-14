@@ -9,6 +9,8 @@
     <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="private\glExtenstions.h" />
     <ClInclude Include="public\sprite.h" />
+    <ClInclude Include="public\game.h" />
+    <ClInclude Include="private\spritesRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\renderer.cpp" />
@@ -17,5 +19,6 @@
     <ClCompile Include="private\window.cpp" />
     <ClCompile Include="private\glExtenstions.cpp" />
     <ClCompile Include="private\sprite.cpp" />
+    <ClCompile Include="private\spritesRenderer.cpp" />
   </ItemGroup>
 </Project>

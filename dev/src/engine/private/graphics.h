@@ -24,5 +24,7 @@ namespace graphics
 
 	extern Uint32 GetUniformLocation( Uint32 program, const AnsiChar* name );
 	extern void SetUniform1f( Uint32 location, Float value );
+	extern void SetUniform2f( Uint32 location, const Float* value );
+	extern void SetUniform3f( Uint32 location, const Float* value );
 	extern void SetUniformMatrix( Uint32 location, const Float* matrix );
 }
