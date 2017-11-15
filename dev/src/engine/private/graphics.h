@@ -12,10 +12,15 @@ namespace graphics
 
 	extern Uint32 CreateArrayBuffer();
 	extern void BindArrayBuffer( Uint32 gid );
-	extern void LoadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data );
-	extern void DrawTriangles( Uint32 buffer, Uint32 n );
-	extern void DrawTriangleStrip( Uint32 buffer, Uint32 n );
+	extern void UploadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data );
+	extern void DrawTriangles( Uint32 n );
+	extern void DrawTriangleStrip( Uint32 n );
 	extern Uint32 GenerateVertexArraysObject();
+
+	extern Uint32 CreateTexture2D();
+	extern void BindTexture2D( Uint32 texture );
+	extern void UploadTexture2D( Uint32 texture, Uint32 width, Uint32 height, const void* data );
+	extern void ActivateTextureUnit0();
 
 	extern Uint32 LoadShader( const AnsiChar* path, Bool vertex );
 	extern Uint32 CreateProgram( Uint32 vertexShader, Uint32 fragmentShader );
@@ -23,6 +28,7 @@ namespace graphics
 	extern void DeleteShader( Uint32 shader );
 
 	extern Uint32 GetUniformLocation( Uint32 program, const AnsiChar* name );
+	extern void SetUniform1i( Uint32 location, Int32 value );
 	extern void SetUniform1f( Uint32 location, Float value );
 	extern void SetUniform2f( Uint32 location, const Float* value );
 	extern void SetUniform3f( Uint32 location, const Float* value );

@@ -181,6 +181,9 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to swap buffers." );
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// Array buffer
+	//////////////////////////////////////////////////////////////////////////
 	Uint32 CreateArrayBuffer()
 	{
 		GLuint buffer = 0;
@@ -195,7 +198,7 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed binding array buffer." );
 	}
 
-	void LoadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data )
+	void UploadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data )
 	{
 		BindArrayBuffer( buffer );
 		glBufferData( GL_ARRAY_BUFFER, n, data, GL_STATIC_DRAW );
@@ -216,12 +219,51 @@ namespace graphics
 		return vao;
 	}
 
-	void DrawTriangles( Uint32 buffer, Uint32 n )
+	//////////////////////////////////////////////////////////////////////////
+	// Texture
+	//////////////////////////////////////////////////////////////////////////
+	Uint32 CreateTexture2D()
+	{
+		GLuint texture = 0;
+		glGenTextures( 1, &texture );
+		SC_ASSERT( glGetError() == 0, "Failed to generate texture." );
+		return texture;
+	}
+
+	void BindTexture2D( Uint32 texture )
+	{
+		glBindTexture( GL_TEXTURE_2D, texture );
+		SC_ASSERT( glGetError() == 0, "Failed to bind 2D texture." );
+	}
+
+	void UploadTexture2D( Uint32 texture, Uint32 width, Uint32 height, const void* data )
+	{
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data );
+		SC_ASSERT( glGetError() == 0, "Failed to bind 2D texture." );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+		SC_ASSERT( glGetError() == 0, "Failed to set mipmaps for 2D texture." );
+	}
+
+	void ActivateTextureUnit0()
+	{
+		glActiveTexture( GL_TEXTURE0 );
+		SC_ASSERT( glGetError() == 0, "Failed to activate texture unit." );
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Drawing
+	//////////////////////////////////////////////////////////////////////////
+	void DrawTriangles( Uint32 n )
 	{
 		glEnableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
-
-		BindArrayBuffer( buffer );
 
 		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, ( void* )0 );
 		SC_ASSERT( glGetError() == 0, "Failed to initialize vertex attrib pointer." );
@@ -233,23 +275,31 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
 	}
 
-	void DrawTriangleStrip( Uint32 buffer, Uint32 n )
+	void DrawTriangleStrip( Uint32 n )
 	{
 		glEnableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
 
-		BindArrayBuffer( buffer );
+		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof( Float ), ( void* )0 );
+		SC_ASSERT( glGetError() == 0, "Failed to initialize 1st vertex attrib pointer." );
 
-		glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, ( void* )0 );
-		SC_ASSERT( glGetError() == 0, "Failed to initialize vertex attrib pointer." );
+		glEnableVertexAttribArray( 1 );
+		glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof( Float ), ( void* )( 2 * sizeof( Float ) ) );
+		SC_ASSERT( glGetError() == 0, "Failed to initialize 2nd vertex attrib pointer." );
 
 		glDrawArrays( GL_TRIANGLE_STRIP, 0, n );
 		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
 
 		glDisableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
+
+		glDisableVertexAttribArray( 1 );
+		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// Shaders
+	//////////////////////////////////////////////////////////////////////////
 	Uint32 LoadShader( const AnsiChar* path, Bool vertex )
 	{
 		std::unique_ptr< sc::FileStream > fs( sc::FileStream::Open( path ) );
@@ -330,6 +380,12 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to get unifrom location [%s].", name );
 		SC_ASSERT( result != 0xffffffff, "Failed to get unifrom location [%s].", name );
 		return result;
+	}
+
+	void SetUniform1i( Uint32 location, Int32 value )
+	{
+		glUniform1i( location, value );
+		SC_ASSERT( glGetError() == 0, "Failed to set integer unifrom." );
 	}
 
 	void SetUniform1f( Uint32 location, Float value )

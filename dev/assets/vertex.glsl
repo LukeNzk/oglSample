@@ -1,6 +1,10 @@
 #version 150
 
 in vec2 pos;
+in vec2 texcoords;
+
+out vec2 uvs;
+
 uniform float rot = 0;
 uniform float scale = 1;
 uniform vec2 position;
@@ -16,4 +20,6 @@ void main()
 	gl_Position.x = scale * ( pos.x * cosRot - pos.y * sinRot );
 	gl_Position.y = scale * ( pos.x * sinRot + pos.y * cosRot );
 	gl_Position = proj * ( gl_Position ) + vec4( position, 0, 0 );
+	
+	uvs = texcoords;
 }

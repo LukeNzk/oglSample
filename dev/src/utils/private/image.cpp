@@ -39,13 +39,22 @@ Image* Image::Load( const AnsiChar* path )
 	Image* result = new Image;
 	
 	FIBITMAP* bmp = helper::LoadImage( path, 0 );
+	SC_ASSERT( bmp, "Could not load image [%s].", path );
+
 	const Uint32 bitsPerPixel = FreeImage_GetBPP( bmp );
 	SC_ASSERT( bitsPerPixel == 4 * 8, "Unsupported image bits per pixel [%d].", bitsPerPixel );
 
-	Uint32 w = FreeImage_GetWidth( bmp );
-	Uint32 h = FreeImage_GetHeight( bmp );
-	Uint8* data = new Uint8[ w * h * 4 ];
-	memcpy( data, FreeImage_GetBits( bmp ), w * h * 4 );
-	delete bmp;
+	const Uint32 w = FreeImage_GetWidth( bmp );
+	const Uint32 h = FreeImage_GetHeight( bmp );
+
+	const Uint32 sz = w * h * 4; // for 32-bit image
+	result->m_data = new Uint8[ sz ];
+	memcpy( result->m_data, FreeImage_GetBits( bmp ), sz );
+
+	FreeImage_Unload( bmp );
+
+	result->m_width = w;
+	result->m_height = h;
+
 	return result;
 }

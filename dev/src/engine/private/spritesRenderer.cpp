@@ -7,6 +7,7 @@
 #include "../../utils/public/matrix.h"
 #include "../../utils/public/vector2.h"
 #include "../../utils/public/types.h"
+#include "../../utils/public/image.h"
 
 namespace helper
 {
@@ -55,6 +56,7 @@ public:
 		m_rotation = graphics::GetUniformLocation( m_programId, "rot" );
 		m_scale = graphics::GetUniformLocation( m_programId, "scale" );
 		m_position = graphics::GetUniformLocation( m_programId, "position" );
+		m_tex0 = graphics::GetUniformLocation( m_programId, "tex0" );
 	}
 
 	void SetProjectionMatrix( const Float* mat ) const
@@ -77,6 +79,11 @@ public:
 		graphics::SetUniform2f( m_position, pos.GetPtr() );
 	}
 
+	void SetTextureSampler( Uint32 i )
+	{
+		graphics::SetUniform1i( m_tex0, i );
+	}
+
 	void Use() const
 	{
 		graphics::UseProgram( m_programId );
@@ -89,6 +96,7 @@ private:
 	Uint32 m_position;
 	Uint32 m_rotation;
 	Uint32 m_scale;
+	Uint32 m_tex0;
 };
 
 
@@ -111,22 +119,35 @@ SpritesRenderer::~SpritesRenderer()
 	m_sprites.swap( std::vector< Sprite* >() );
 }
 
+Uint32 tex = 0;
+
 void SpritesRenderer::Init()
 {
-	// square
-	const Float verts[] = {
-		-1.0f, -1.0f,
-		-1.0f,  1.0f,
-		1.0f, -1.0f,
-		1.0f, 1.0f
+	// quad
+	const Float quadVerts[] = {
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f,
+		1.0f, -1.0f,1.0f, 0.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
 	};
 
 	m_vbo = graphics::CreateArrayBuffer();
 	graphics::BindArrayBuffer( m_vbo );
-	graphics::LoadStaticBufferData( m_vbo, 8 * sizeof( Float ), verts );
+	graphics::UploadStaticBufferData( m_vbo, 16 * sizeof( Float ), quadVerts );
 	
 	m_shader.reset( new SpriteShader );
 	m_shader->Load();
+
+	// texture
+	Image* img = Image::Load( "D:\\img.png" );
+	
+	tex = graphics::CreateTexture2D();
+	graphics::ActivateTextureUnit0();
+	graphics::BindTexture2D( tex );
+
+	graphics::UploadTexture2D( tex, img->GetWidth(), img->GetHeight(), img->GetData() );
+
+	delete img;
 
 	const Matrix projection = Matrix::CreateOrthoProj( -1.33f, -1.0, 1.33f, 1.0f, 0.1f, 100.0f );
 	m_shader->SetProjectionMatrix( projection.GetData() );
@@ -135,18 +156,23 @@ void SpritesRenderer::Init()
 void SpritesRenderer::Draw()
 {
 	m_shader->Use();
+	m_shader->SetTextureSampler( 0 );
+
 	graphics::BindArrayBuffer( m_vbo );
+
+	graphics::ActivateTextureUnit0();
+	graphics::BindTexture2D( tex );
 
 	for ( Sprite* sprite : m_sprites )
 	{
 		if ( sprite == nullptr )
 			continue;
-
+		
 		m_shader->SetRotation( sprite->m_rotation );
 		m_shader->SetScale( sprite->m_scale );
 		m_shader->SetPosition( sprite->m_position );
 
-		graphics::DrawTriangleStrip( m_vbo, 8 );
+		graphics::DrawTriangleStrip( 8 );
 	}
 }
 
