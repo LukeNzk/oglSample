@@ -1,5 +1,5 @@
 #pragma once
-#include "commonUtils.h"
+#include "types.h"
 
 namespace sc
 {

@@ -132,6 +132,7 @@
     <ClInclude Include="public\input.h" />
     <ClInclude Include="public\inputCodes.h" />
     <ClInclude Include="public\sprite.h" />
+    <ClInclude Include="public\textureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\engine.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="private\renderer.cpp" />
     <ClCompile Include="private\sprite.cpp" />
     <ClCompile Include="private\spritesRenderer.cpp" />
+    <ClCompile Include="private\textureManager.cpp" />
     <ClCompile Include="private\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

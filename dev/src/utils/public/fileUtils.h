@@ -5,7 +5,8 @@ namespace sc
 {
 	namespace path
 	{
-		// check if the path is a directory path (ends with '/' or '\'
+		const Uint32 FileNameIndex( const AnsiChar* path );
+
 		Bool IsDirectory( const char* path );
 
 		const char* GetExtension( const char* path );
@@ -31,6 +32,8 @@ namespace sc
 
 	// directory of current executable
 	std::string GetExecutableDir();
+
+	std::string GetResourcePath( const AnsiChar* relativePath );
 
 	std::string GetResourcesDir();
 }

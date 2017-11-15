@@ -6,15 +6,37 @@
 
 namespace sc
 {
+	namespace helper
+	{
+		inline Bool IsSlash( char c )
+		{
+			return c == '\\' || c == '/';
+		}
+	}
+
 	namespace path
 	{
-		Bool path::IsDirectory( const char* path )
+		const Uint32 FileNameIndex( const AnsiChar* path )
 		{
-			const Uint32 pathLen = static_cast< Uint32 >( strlen( path ) );
-			return path[ pathLen - 1 ] == '\\' || path[ pathLen - 1 ] == '/';
+			Uint32 fileNameIndex = static_cast< Uint32 >( strlen( path ) ) - 1;
+			for ( ; fileNameIndex > 0; --fileNameIndex )
+			{
+				if ( helper::IsSlash( path[ fileNameIndex ] ) )
+				{
+					return fileNameIndex + 1;
+				}
+			}
+
+			return 0;
 		}
 
-		const char* GetExtension( const char* path )
+		Bool path::IsDirectory( const AnsiChar* path )
+		{
+			const Uint32 pathLen = static_cast< Uint32 >( strlen( path ) );
+			return helper::IsSlash( path[ pathLen - 1 ] );
+		}
+
+		const char* GetExtension( const AnsiChar* path )
 		{
 			if ( IsDirectory( path ) )
 				return nullptr;
@@ -140,13 +162,28 @@ namespace sc
 		return result.substr( 0, endPos + 1 );
 	}
 
-	std::string GetResourcesDir()
+	AbsolutePath GetResourcesPath()
 	{
 		sc::AbsolutePath path( GetExecutableDir().c_str() );
 		path.DirUp();
 		path.DirUp();
 
 		path.AppendDirectory( "assets" );
+
+		return path;
+	}
+
+	std::string GetResourcePath( const AnsiChar* relativePath )
+	{
+		sc::AbsolutePath path = GetResourcesPath();
+		path.SetFile( relativePath );
+
+		return path.Get();
+	}
+
+	std::string GetResourcesDir()
+	{
+		sc::AbsolutePath path = GetResourcesPath();
 		return path.Get();
 	}
 }

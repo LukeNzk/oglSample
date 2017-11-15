@@ -11,6 +11,7 @@
     <ClInclude Include="public\sprite.h" />
     <ClInclude Include="public\game.h" />
     <ClInclude Include="private\spritesRenderer.h" />
+    <ClInclude Include="public\textureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\renderer.cpp" />
@@ -20,5 +21,6 @@
     <ClCompile Include="private\glExtenstions.cpp" />
     <ClCompile Include="private\sprite.cpp" />
     <ClCompile Include="private\spritesRenderer.cpp" />
+    <ClCompile Include="private\textureManager.cpp" />
   </ItemGroup>
 </Project>

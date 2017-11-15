@@ -1,6 +1,7 @@
 #include "spritesRenderer.h"
 #include "sprite.h"
 #include "graphics.h"
+#include "textureManager.h"
 
 #include "../../utils/public/absolutePath.h"
 #include "../../utils/public/fileUtils.h"
@@ -139,15 +140,9 @@ void SpritesRenderer::Init()
 	m_shader->Load();
 
 	// texture
-	Image* img = Image::Load( "D:\\img.png" );
-	
-	tex = graphics::CreateTexture2D();
-	graphics::ActivateTextureUnit0();
-	graphics::BindTexture2D( tex );
-
-	graphics::UploadTexture2D( tex, img->GetWidth(), img->GetHeight(), img->GetData() );
-
-	delete img;
+	TextureManager textures;
+	textures.LoadTextures();
+	tex = textures.FindTexture( "img.png" );
 
 	const Matrix projection = Matrix::CreateOrthoProj( -1.33f, -1.0, 1.33f, 1.0f, 0.1f, 100.0f );
 	m_shader->SetProjectionMatrix( projection.GetData() );
