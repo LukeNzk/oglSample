@@ -3,6 +3,7 @@
 #include "../../utils/public/absolutePath.h"
 #include "../../utils/public/fileUtils.h"
 #include "../../utils/public/matrix.h"
+#include "../../utils/public/image.h"
 
 #include "graphics.h"
 #include "spritesRenderer.h"
@@ -10,6 +11,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <memory>
 
 SpritesRenderer gSpriteRenderer;
 

@@ -1,0 +1,3 @@
+x64_Debug, x64_Release
+x64/FreeImage.dll;
+x64/FreeImage.dll;

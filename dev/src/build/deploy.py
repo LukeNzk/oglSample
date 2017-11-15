@@ -3,7 +3,7 @@ import os
 
 #config params
 internals = []
-externals = [ 'googletest' ]
+externals = [ 'googletest', 'freeimage' ]
 
 intDir = '../internal/' #relative to solution dir
 extDir = '../external/' #relative to solution dir

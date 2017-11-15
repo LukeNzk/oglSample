@@ -24,6 +24,7 @@
     <ClInclude Include="public\fileStream.h" />
     <ClInclude Include="public\fileUtils.h" />
     <ClInclude Include="public\hash.h" />
+    <ClInclude Include="public\image.h" />
     <ClInclude Include="public\macros.h" />
     <ClInclude Include="public\matrix.h" />
     <ClInclude Include="public\stream.h" />
@@ -37,6 +38,7 @@
     <ClCompile Include="private\debug.cpp" />
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
+    <ClCompile Include="private\image.cpp" />
     <ClCompile Include="private\types.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

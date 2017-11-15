@@ -13,6 +13,7 @@
     <ClInclude Include="public\vector4.h" />
     <ClInclude Include="public\vector2.h" />
     <ClInclude Include="public\matrix.h" />
+    <ClInclude Include="public\image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\types.cpp" />
@@ -20,5 +21,6 @@
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\debug.cpp" />
+    <ClCompile Include="private\image.cpp" />
   </ItemGroup>
 </Project>
