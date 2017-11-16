@@ -6,6 +6,9 @@
 #include "textureManager.h"
 #include "sprite.h"
 
+#include "../../utils/public/timer.h"
+#include "../../utils/public/debug.h"
+
 Engine::Engine()
 	: m_quit( false )
 {
@@ -36,10 +39,17 @@ void Engine::Start( IGame* game )
 	Sprite* spr = m_renderer->CreateSprite();
 	spr->SetTexture( textures.FindTexture( "img.png" ) );
 
+	Timer< Float > timer;
+	timer.Start();
+
+	Float dt;
+
 	// update loop
 	while ( !m_quit )
 	{
-		m_game->Tick( 0.0f );
+		dt = timer.TimeElapsed();
+		timer.Start();
+		m_game->Tick( dt );
 		m_window->Tick();
 		m_renderer->Draw();
 	}

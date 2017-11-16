@@ -28,6 +28,7 @@
     <ClInclude Include="public\macros.h" />
     <ClInclude Include="public\matrix.h" />
     <ClInclude Include="public\stream.h" />
+    <ClInclude Include="public\timer.h" />
     <ClInclude Include="public\types.h" />
     <ClInclude Include="public\vector2.h" />
     <ClInclude Include="public\vector4.h" />
@@ -39,6 +40,7 @@
     <ClCompile Include="private\fileStream.cpp" />
     <ClCompile Include="private\fileUtils.cpp" />
     <ClCompile Include="private\image.cpp" />
+    <ClCompile Include="private\timer.cpp" />
     <ClCompile Include="private\types.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
