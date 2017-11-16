@@ -13,6 +13,9 @@
     <ClCompile Include="src\movement.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\asteroid.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -32,6 +35,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\movement.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\asteroid.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

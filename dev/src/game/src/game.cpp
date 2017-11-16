@@ -1,5 +1,6 @@
 #include "game.h"
 #include "movement.h"
+#include "asteroid.h"
 
 #include "..\..\engine\public\engine.h"
 #include "..\..\engine\public\textureManager.h"
@@ -21,7 +22,7 @@ void Game::LoadResources()
 
 	spr = GEngine->CreateSprite();
 	spr->SetTexture( textures.FindTexture( "img.png" ) );
-	spr->m_scale = 0.2f;
+	spr->m_scale = 0.1f;
 }
 
 Movement mvt;
