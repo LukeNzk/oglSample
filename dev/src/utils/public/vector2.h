@@ -157,6 +157,11 @@ struct Vector2
 		return x * b.x + y * b.y;
 	}
 
+	inline Float Angle( const Vector2& b )
+	{
+		return std::acos( Dot( b ) );
+	}
+
 	inline Vector2 Normalized() const
 	{
 		const Float mag = Magnitude();

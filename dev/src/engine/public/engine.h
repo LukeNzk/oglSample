@@ -6,6 +6,8 @@
 class CWindow;
 class Renderer;
 class IGame;
+class Sprite;
+class IInputManager;
 
 typedef std::unique_ptr< CWindow > WndPtrU;
 typedef std::unique_ptr< Renderer > RendererPtrU;
@@ -18,6 +20,9 @@ public:
 
 	void Init();
 	void Start( IGame* game );
+
+	Sprite* CreateSprite();
+	void SetInputManager( IInputManager* input );
 
 private:
 	WndPtrU			m_window;

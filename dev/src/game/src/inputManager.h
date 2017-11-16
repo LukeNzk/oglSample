@@ -1,7 +1,7 @@
 #pragma once
 #include "../../engine/public/input.h"
 
-class InputManager : Input::IInputManager
+class InputManager : IInputManager
 {
 public:
 	// Inherited via IInputManager

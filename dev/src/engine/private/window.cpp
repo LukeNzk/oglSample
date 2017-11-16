@@ -6,10 +6,7 @@
 #include "../../utils/public/debug.h"
 #include "../../utils/public/wndincl.h"
 
-namespace Input
-{
-	IInputManager* GInputManager = nullptr;
-}
+IInputManager* GInputManager = nullptr;
 
 void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
 {
@@ -26,8 +23,8 @@ void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
 		eventData = ( void* )&wParam;
 	}
 
-	if ( Input::GInputManager )
-		Input::GInputManager->DispatchEvent( evnt, eventData );
+	if ( GInputManager )
+		GInputManager->DispatchEvent( evnt, eventData );
 }
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
@@ -40,8 +37,6 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 	{
 		//KEY
 	case WM_CREATE:
-		Debug::SCDebug::Info( "Window created" );
-		//graphics::Init( hwnd );
 		break;
 	case WM_SIZE:
 		graphics::ResizeViewport( LOWORD( lparam ), HIWORD( lparam ) );
@@ -111,11 +106,6 @@ CWindow::CWindow()
 {
 }
 
-CWindow::CWindow( Input::IInputManager* inputManager )
-{
-	Input::GInputManager = inputManager;
-}
-
 bool CWindow::Create( Uint32 width, Uint32 height )
 {
 	m_width = width;
@@ -165,8 +155,8 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 		"MainWindow",
 		"Main window",
 		WS_OVERLAPPEDWINDOW,
-		520, 20, 
-		wndRect.right - wndRect.left, 
+		520, 20,
+		wndRect.right - wndRect.left,
 		wndRect.bottom - wndRect.top,
 		consoleHWND,
 		NULL,
@@ -193,4 +183,9 @@ void CWindow::Tick()
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 	}
+}
+
+void CWindow::SetInputManager( IInputManager* input )
+{
+	GInputManager = input;
 }

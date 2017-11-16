@@ -7,6 +7,12 @@
     <ClCompile Include="src\mainGame.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\game.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\movement.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -20,6 +26,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inputManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\movement.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

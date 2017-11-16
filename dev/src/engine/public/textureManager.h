@@ -6,12 +6,12 @@
 class TextureManager
 {
 public:
-	void LoadTextures();
+	void LoadTexture( const AnsiChar* path );
 
 	Uint32 FindTexture( const AnsiChar* path );
 
 private:
-	void LoadTexture( const AnsiChar* path );
+	void InternalLoadTexture( const AnsiChar * path );
 
 private:
 	std::vector< Uint32 > m_textureHashes;

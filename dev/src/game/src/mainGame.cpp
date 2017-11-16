@@ -1,23 +1,9 @@
-#include "..\..\engine\public\engine.h"
 #include "..\..\utils\public\macros.h"
-#include "..\..\engine\public\game.h"
+#include "..\..\engine\public\engine.h"
 
-#include <stdlib.h>
+#include "game.h"
 
 Engine* GEngine = nullptr;
-
-class Game final : public IGame 
-{
-public:
-	~Game() override { }
-
-	void Tick( Float dt ) override
-	{
-
-	}
-
-private:
-};
 
 void main()
 {
@@ -26,5 +12,6 @@ void main()
 	GEngine = &engine;
 
 	GEngine->Init();
+	GEngine->SetInputManager( &game );
 	GEngine->Start( &game );
 }

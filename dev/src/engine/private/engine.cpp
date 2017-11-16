@@ -3,7 +3,6 @@
 #include "graphics.h"
 #include "renderer.h"
 #include "game.h"
-#include "textureManager.h"
 #include "sprite.h"
 
 #include "../../utils/public/timer.h"
@@ -11,6 +10,7 @@
 
 Engine::Engine()
 	: m_quit( false )
+	, m_game( nullptr )
 {
 }
 
@@ -33,15 +33,13 @@ void Engine::Start( IGame* game )
 {
 	m_game = game;
 
-	TextureManager textures;
-	textures.LoadTextures();
-
-	Sprite* spr = m_renderer->CreateSprite();
-	spr->SetTexture( textures.FindTexture( "img.png" ) );
-
 	Timer< Float > timer;
 	timer.Start();
 
+	m_game->LoadResources();
+
+	Debug::SCDebug::Info( "Resources loaded... %f s\n", timer.TimeElapsed() );
+	timer.Start();
 	Float dt;
 
 	// update loop
@@ -53,4 +51,14 @@ void Engine::Start( IGame* game )
 		m_window->Tick();
 		m_renderer->Draw();
 	}
+}
+
+Sprite* Engine::CreateSprite()
+{
+	return m_renderer->CreateSprite();
+}
+
+void Engine::SetInputManager( IInputManager* input )
+{
+	m_window->SetInputManager( input );
 }

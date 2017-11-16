@@ -7,9 +7,9 @@
 #include "../../utils/public/hash.h"
 #include "../../utils/public/fileUtils.h"
 
-void TextureManager::LoadTextures()
+void TextureManager::LoadTexture( const AnsiChar* name )
 {
-	LoadTexture( sc::GetResourcePath( "img.png" ).c_str() );
+	InternalLoadTexture( sc::GetResourcePath( name ).c_str() );
 }
 
 Uint32 TextureManager::FindTexture( const AnsiChar* fileName )
@@ -27,7 +27,7 @@ Uint32 TextureManager::FindTexture( const AnsiChar* fileName )
 	return 0; // texture not found
 }
 
-void TextureManager::LoadTexture( const AnsiChar* path )
+void TextureManager::InternalLoadTexture( const AnsiChar* path )
 {
 	const AnsiChar* filename = &path[ sc::path::FileNameIndex( path ) ];
 	const Uint32 hash = sc::GetHash32( filename );

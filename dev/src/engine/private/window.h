@@ -1,10 +1,7 @@
 #pragma once
 #include "../../utils/public/types.h"
 
-namespace Input
-{
-	class IInputManager;
-}
+class IInputManager;
 
 class CWindow
 {
@@ -19,7 +16,8 @@ private:
 
 public:
 	CWindow();
-	CWindow( Input::IInputManager* inputManager );
+
+	void SetInputManager( IInputManager* inputManager );
 	Bool Create( Uint32 width, Uint32 height );
 	void Tick();
 
