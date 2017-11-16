@@ -1,7 +1,9 @@
 #include "asteroid.h"
 
-Asteroid::Asteroid( Float radius )
-	: m_radius( radius )
+Asteroid::Asteroid()
+	: m_radius( 0 )
+	, m_pos( 1000, 1000 )
+	, m_active( false )
 {
 }
 
@@ -16,4 +18,14 @@ Bool Asteroid::Intersects( Vector2 point ) const
 		return true;
 
 	return false;
+}
+
+void Asteroid::Tick( Float dt )
+{
+}
+
+void Asteroid::Destroy()
+{
+	m_active = false;
+	m_pos = Vector2( 1000, 1000 );
 }

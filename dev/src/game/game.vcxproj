@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\asteroid.cpp" />
+    <ClCompile Include="src\asteroidsManager.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\inputManager.cpp" />
     <ClCompile Include="src\mainGame.cpp" />
@@ -138,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\asteroid.h" />
+    <ClInclude Include="src\asteroidsManager.h" />
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\inputManager.h" />
     <ClInclude Include="src\movement.h" />
