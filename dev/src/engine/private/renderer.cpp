@@ -13,18 +13,23 @@
 #include <iostream>
 #include <memory>
 
-SpritesRenderer gSpriteRenderer;
+Renderer::Renderer()
+	: m_sprites( nullptr )
+{
+}
+
+Renderer::~Renderer()
+{
+	delete m_sprites;
+	m_sprites = nullptr;
+}
 
 void Renderer::Init()
 {
 	graphics::GenerateVertexArraysObject();
 
-	gSpriteRenderer.Init();
-	Sprite* spr = gSpriteRenderer.CreateSprite();
-
-	spr->m_position = Vector2( 0, 0.5f );
-	spr->m_scale = 0.2f;
-	spr->m_rotation = 0.2f;
+	m_sprites = new SpritesRenderer;
+	m_sprites->Init();
 
 	graphics::SetClearColor( 0.5f, 0.5f, 0.5f, 1 );
 }
@@ -33,7 +38,12 @@ void Renderer::Draw()
 {
 	graphics::ClearColorAndDepth();
 
-	gSpriteRenderer.Draw();
+	m_sprites->Draw();
 
 	graphics::SwapBuffers();
+}
+
+Sprite* Renderer::CreateSprite() const
+{
+	return m_sprites->CreateSprite();
 }

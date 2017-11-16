@@ -100,7 +100,6 @@ private:
 	Uint32 m_tex0;
 };
 
-
 //////////////////////////////////////////////////////////////////////////
 // SpritesRenderer
 //////////////////////////////////////////////////////////////////////////
@@ -120,8 +119,6 @@ SpritesRenderer::~SpritesRenderer()
 	m_sprites.swap( std::vector< Sprite* >() );
 }
 
-Uint32 tex = 0;
-
 void SpritesRenderer::Init()
 {
 	// quad
@@ -139,11 +136,6 @@ void SpritesRenderer::Init()
 	m_shader.reset( new SpriteShader );
 	m_shader->Load();
 
-	// texture
-	TextureManager textures;
-	textures.LoadTextures();
-	tex = textures.FindTexture( "img.png" );
-
 	const Matrix projection = Matrix::CreateOrthoProj( -1.33f, -1.0, 1.33f, 1.0f, 0.1f, 100.0f );
 	m_shader->SetProjectionMatrix( projection.GetData() );
 }
@@ -156,7 +148,6 @@ void SpritesRenderer::Draw()
 	graphics::BindArrayBuffer( m_vbo );
 
 	graphics::ActivateTextureUnit0();
-	graphics::BindTexture2D( tex );
 
 	for ( Sprite* sprite : m_sprites )
 	{
@@ -166,6 +157,7 @@ void SpritesRenderer::Draw()
 		m_shader->SetRotation( sprite->m_rotation );
 		m_shader->SetScale( sprite->m_scale );
 		m_shader->SetPosition( sprite->m_position );
+		graphics::BindTexture2D( sprite->GetTexture() );
 
 		graphics::DrawTriangleStrip( 8 );
 	}

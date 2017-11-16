@@ -3,6 +3,8 @@
 #include "graphics.h"
 #include "renderer.h"
 #include "game.h"
+#include "textureManager.h"
+#include "sprite.h"
 
 Engine::Engine()
 	: m_quit( false )
@@ -27,6 +29,12 @@ void Engine::Init()
 void Engine::Start( IGame* game )
 {
 	m_game = game;
+
+	TextureManager textures;
+	textures.LoadTextures();
+
+	Sprite* spr = m_renderer->CreateSprite();
+	spr->SetTexture( textures.FindTexture( "img.png" ) );
 
 	// update loop
 	while ( !m_quit )
