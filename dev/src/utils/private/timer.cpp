@@ -1,13 +1,6 @@
 #include "timer.h"
 #include <chrono>
 
-template class Timer<Float>;
-template class Timer<Double>;
-template class Timer<Uint32>;
-template class Timer<Uint64>;
-template class Timer<Int32>;
-template class Timer<Int64>;
-
 namespace helper
 {
 	template< typename T >
@@ -24,20 +17,17 @@ namespace helper
 }
 
 
-template<typename T>
-Timer<T>::Timer()
-	: m_start( T( 0 ) )
+Timer::Timer()
+	: m_start( 0.0 )
 {
 }
 
-template< typename T >
-void Timer< T >::Start()
+void Timer::Start()
 {
-	m_start = helper::GetTime< T >();
+	m_start = helper::GetTime< Double >();
 }
 
-template<typename T>
-T Timer<T>::TimeElapsed() const
+Double Timer::TimeElapsed() const
 {
-	return helper::GetTime< T >() - m_start;
+	return helper::GetTime< Double >() - m_start;
 }

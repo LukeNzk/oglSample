@@ -33,7 +33,7 @@ void Engine::Start( IGame* game )
 {
 	m_game = game;
 
-	Timer< Float > timer;
+	Timer timer;
 	timer.Start();
 
 	m_game->LoadResources();
@@ -45,7 +45,7 @@ void Engine::Start( IGame* game )
 	// update loop
 	while ( !m_quit )
 	{
-		dt = timer.TimeElapsed();
+		dt = static_cast< Float >( timer.TimeElapsed() );
 		timer.Start();
 
 		m_game->Tick( dt );
