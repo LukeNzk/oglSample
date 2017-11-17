@@ -2,6 +2,7 @@
 #include "movement.h"
 #include "asteroid.h"
 #include "asteroidsManager.h"
+#include "missilesManager.h"
 
 #include "..\..\engine\public\engine.h"
 #include "..\..\engine\public\textureManager.h"
@@ -18,6 +19,7 @@ Vector2 mousePos;
 
 Game::Game()
 	: m_asteroids( nullptr )
+	, m_missiles( nullptr )
 {
 }
 
@@ -38,6 +40,9 @@ void Game::LoadResources()
 
 	m_asteroids = new AsteroidsManager;
 	m_asteroids->LoadResources( &textures );
+
+	m_missiles = new MissilesManager;
+	m_missiles->LoadResources( &textures );
 }
 
 Movement mvt;
@@ -50,6 +55,7 @@ void Game::Tick( Float dt )
 	spr->m_rotation = mvt.m_rotation;
 
 	m_asteroids->Tick( dt );
+	m_missiles->Tick( dt );
 }
 
 void Game::DispatchEvent( ERIEventType type, void* data )
@@ -63,7 +69,7 @@ void Game::DispatchEvent( ERIEventType type, void* data )
 		}
 		else if( keyCode == RI_LMB || keyCode == RI_RMB )
 		{
-			Debug::SCDebug::Info( "LMB %d\n", keyCode );
+			m_missiles->TryShoot( mvt.m_position, mvt.m_targetDirection );
 		}
 	}
 	else if ( type == ERIEventType::RIE_UP )

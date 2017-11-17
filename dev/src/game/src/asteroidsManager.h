@@ -14,9 +14,11 @@ public:
 
 	void LoadResources( TextureManager* textures );
 	void Tick( Float dt );
+	Bool TryDestroyAsteroid( Vector2 point );
 
 private:
 	void Spawn();
+	void Deactivate( Uint32 asteroidIndex );
 
 private:
 	std::vector< Asteroid* > m_asteroids;

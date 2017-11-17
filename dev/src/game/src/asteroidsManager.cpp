@@ -100,8 +100,22 @@ void AsteroidsManager::Tick( Float dt )
 		sprite->m_position = asteroid->m_pos;
 
 		if ( sprite->m_position.SqrMagnitude() > 9.0f )
-			asteroid->m_active = false;
+			Deactivate( i );
 	}
+}
+
+Bool AsteroidsManager::TryDestroyAsteroid( Vector2 point )
+{
+	for ( Uint32 i = 0; i < m_maxAsteroids; ++i )
+	{
+		if ( m_asteroids[ i ]->Intersects( point ) )
+		{
+			Deactivate( i );
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void AsteroidsManager::Spawn()
@@ -130,4 +144,11 @@ void AsteroidsManager::Spawn()
 	asteroid->m_active = true;
 
 	sprite->m_position = asteroid->m_pos;
+}
+
+void AsteroidsManager::Deactivate( Uint32 asteroidIndex )
+{
+	m_asteroids[ asteroidIndex ]->m_active = false;
+	m_asteroids[ asteroidIndex ]->m_pos = Vector2( 1000, 1000 );
+	m_spritesPool[ asteroidIndex ]->m_position = m_asteroids[ asteroidIndex ]->m_pos;
 }

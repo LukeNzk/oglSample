@@ -41,11 +41,8 @@ void Movement::Move( Float dt )
 	{
 		m_targetDirection.Normalize();
 		m_rotation = up.Angle( m_targetDirection );
-		m_rotation = m_rotation;
 		if ( m_targetDirection.x > 0.0f )
 			m_rotation = -m_rotation;
-
-		m_rotation = m_rotation;
 	}
 
 	m_direction.Lerp( m_targetDirection, 0.05f );

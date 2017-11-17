@@ -11,11 +11,11 @@ public:
 
 	Float	m_rotation;
 	Vector2 m_position;
+	Vector2 m_targetDirection;
 
 private:
-	Vector2 m_direction;
-	Vector2 m_targetDirection;
 	Vector2 m_mousePosition;
+	Vector2 m_direction;
 
 	Float	m_desiredSpeed;
 	Float	m_speed;

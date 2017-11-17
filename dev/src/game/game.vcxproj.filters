@@ -19,6 +19,9 @@
     <ClCompile Include="src\asteroidsManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\missilesManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -44,6 +47,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\asteroidsManager.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\missilesManager.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

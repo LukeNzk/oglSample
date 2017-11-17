@@ -4,6 +4,7 @@
 #include "../../engine/public/game.h"
 
 class AsteroidsManager;
+class MissilesManager;
 
 class Game final : public IGame, public IInputManager
 {
@@ -16,5 +17,6 @@ public:
 	void DispatchEvent( ERIEventType type, void* data ) override;
 
 private:
-	AsteroidsManager* m_asteroids;
+	AsteroidsManager*	m_asteroids;
+	MissilesManager*	m_missiles;
 };
