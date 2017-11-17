@@ -31,7 +31,7 @@ void Renderer::Init()
 	m_sprites = new SpritesRenderer;
 	m_sprites->Init();
 
-	graphics::SetClearColor( 0.5f, 0.5f, 0.5f, 1 );
+	graphics::SetClearColor( 0.1f, 0.1f, 0.2f, 1 );
 }
 
 void Renderer::Draw()

@@ -3,12 +3,18 @@
 #include "../../engine/public/input.h"
 #include "../../engine/public/game.h"
 
+class AsteroidsManager;
+
 class Game final : public IGame, public IInputManager
 {
 public:
-	~Game() override { }
+	Game();
+	~Game() override;
 
 	void LoadResources() override;
 	void Tick( Float dt ) override;
 	void DispatchEvent( ERIEventType type, void* data ) override;
+
+private:
+	AsteroidsManager* m_asteroids;
 };

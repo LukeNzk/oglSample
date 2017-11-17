@@ -132,7 +132,7 @@ namespace graphics
 
 		glClearDepth( 1.0f );
 
-		glEnable( GL_DEPTH_TEST );
+		//glEnable( GL_DEPTH_TEST );
 		glFrontFace( GL_CW );
 
 		glEnable( GL_CULL_FACE );

@@ -11,10 +11,10 @@ Asteroid::~Asteroid()
 {
 }
 
-Bool Asteroid::Intersects( Vector2 point ) const
+Bool Asteroid::Intersects( Vector2 point, Float radius ) const
 {
 	Vector2 asteroidToPoint = point - m_pos;
-	if ( asteroidToPoint.SqrMagnitude() < m_radius * m_radius )
+	if ( asteroidToPoint.SqrMagnitude() < ( m_radius * m_radius + radius * radius ) )
 		return true;
 
 	return false;
@@ -22,6 +22,7 @@ Bool Asteroid::Intersects( Vector2 point ) const
 
 void Asteroid::Tick( Float dt )
 {
+	m_pos += m_direction * dt;
 }
 
 void Asteroid::Destroy()

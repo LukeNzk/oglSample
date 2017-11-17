@@ -15,6 +15,7 @@
     <ClInclude Include="public\matrix.h" />
     <ClInclude Include="public\image.h" />
     <ClInclude Include="public\timer.h" />
+    <ClInclude Include="public\random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="private\types.cpp" />
@@ -24,5 +25,6 @@
     <ClCompile Include="private\debug.cpp" />
     <ClCompile Include="private\image.cpp" />
     <ClCompile Include="private\timer.cpp" />
+    <ClCompile Include="private\random.cpp" />
   </ItemGroup>
 </Project>
