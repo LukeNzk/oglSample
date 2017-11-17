@@ -14,7 +14,7 @@ public:
 
 	void LoadResources( TextureManager* textures );
 	void Tick( Float dt );
-	Bool TryDestroyAsteroid( Vector2 point );
+	Bool TryDestroyAsteroid( const Vector2& point );
 
 private:
 	void Spawn();

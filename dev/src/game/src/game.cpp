@@ -56,6 +56,8 @@ void Game::Tick( Float dt )
 
 	m_asteroids->Tick( dt );
 	m_missiles->Tick( dt );
+
+	m_missiles->CheckCollision( [ this ]( const Vector2& pos ) { return m_asteroids->TryDestroyAsteroid( pos ); } );
 }
 
 void Game::DispatchEvent( ERIEventType type, void* data )

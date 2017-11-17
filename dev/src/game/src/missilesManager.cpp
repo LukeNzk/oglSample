@@ -106,3 +106,15 @@ void MissilesManager::TryShoot( const Vector2& position, const Vector2& directio
 		}
 	}
 }
+
+void MissilesManager::CheckCollision( std::function<Bool( const Vector2& ) > collides )
+{
+	for ( Missile* missile : m_missiles )
+	{
+		if ( collides( missile->m_position ) )
+		{
+			missile->m_ttl = c_missileLifetime;
+			break;
+		}
+	}
+}

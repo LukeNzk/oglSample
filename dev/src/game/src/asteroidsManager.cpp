@@ -104,7 +104,7 @@ void AsteroidsManager::Tick( Float dt )
 	}
 }
 
-Bool AsteroidsManager::TryDestroyAsteroid( Vector2 point )
+Bool AsteroidsManager::TryDestroyAsteroid( const Vector2& point )
 {
 	for ( Uint32 i = 0; i < m_maxAsteroids; ++i )
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include "../../utils/public/types.h"
 
+#include <functional>
 #include <vector>
 
 class TextureManager;
@@ -17,6 +18,7 @@ public:
 	void LoadResources( TextureManager* textures );
 	void Tick( Float dt );
 	void TryShoot( const Vector2& position, const Vector2& direction );
+	void CheckCollision( std::function<Bool( const Vector2& ) > collides );
 
 private:
 	std::vector< Missile* > m_missiles;
