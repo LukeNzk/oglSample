@@ -278,7 +278,7 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
 	}
 
-	void DrawTriangleStrip( Uint32 n )
+	void EnableSpriteAttributes()
 	{
 		glEnableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to enable vertex attrib array." );
@@ -289,15 +289,21 @@ namespace graphics
 		glEnableVertexAttribArray( 1 );
 		glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof( Float ), ( void* )( 2 * sizeof( Float ) ) );
 		SC_ASSERT( glGetError() == 0, "Failed to initialize 2nd vertex attrib pointer." );
+	}
 
-		glDrawArrays( GL_TRIANGLE_STRIP, 0, n );
-		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
-
+	void DisableSpriteAttributes()
+	{
 		glDisableVertexAttribArray( 0 );
 		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
 
 		glDisableVertexAttribArray( 1 );
 		SC_ASSERT( glGetError() == 0, "Failed to disable vertex attrib pointer." );
+	}
+
+	void DrawTriangleStrip( Uint32 n )
+	{
+		glDrawArrays( GL_TRIANGLE_STRIP, 0, n );
+		SC_ASSERT( glGetError() == 0, "Failed to draw arrays." );
 	}
 
 	//////////////////////////////////////////////////////////////////////////

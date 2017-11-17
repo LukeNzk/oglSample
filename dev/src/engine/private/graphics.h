@@ -15,6 +15,8 @@ namespace graphics
 	extern void UploadStaticBufferData( Uint32 buffer, Uint32 n, const Float* data );
 	extern void DrawTriangles( Uint32 n );
 	extern void DrawTriangleStrip( Uint32 n );
+	extern void EnableSpriteAttributes();
+	extern void DisableSpriteAttributes();
 	extern Uint32 GenerateVertexArraysObject();
 
 	extern Uint32 CreateTexture2D();

@@ -40,16 +40,17 @@ void Engine::Start( IGame* game )
 
 	Debug::SCDebug::Info( "Resources loaded... %f s\n", timer.TimeElapsed() );
 	timer.Start();
-	Float dt;
+	Float dt = 0.0f;
 
 	// update loop
 	while ( !m_quit )
 	{
 		dt = timer.TimeElapsed();
 		timer.Start();
+
 		m_game->Tick( dt );
-		m_window->Tick();
 		m_renderer->Draw();
+		m_window->Tick();
 	}
 }
 

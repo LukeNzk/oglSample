@@ -148,6 +148,8 @@ void SpritesRenderer::Draw()
 	graphics::BindArrayBuffer( m_vbo );
 
 	graphics::ActivateTextureUnit0();
+	Uint32 prevTexture = 0;
+	graphics::EnableSpriteAttributes();
 
 	for ( Sprite* sprite : m_sprites )
 	{
@@ -157,10 +159,17 @@ void SpritesRenderer::Draw()
 		m_shader->SetRotation( sprite->m_rotation );
 		m_shader->SetScale( sprite->m_scale );
 		m_shader->SetPosition( sprite->m_position );
-		graphics::BindTexture2D( sprite->GetTexture() );
+
+		if ( sprite->GetTexture() != prevTexture )
+		{
+			prevTexture = sprite->GetTexture();
+			graphics::BindTexture2D( sprite->GetTexture() );
+		}
 
 		graphics::DrawTriangleStrip( 8 );
 	}
+
+	graphics::DisableSpriteAttributes();
 }
 
 Sprite* SpritesRenderer::CreateSprite()
