@@ -3,107 +3,138 @@
 #include "graphics.h"
 #include "input.h"
 
-#include "../../utils/public/debug.h"
+#include "../../utils/public/macros.h"
 #include "../../utils/public/wndincl.h"
 
-IInputManager* GInputManager = nullptr;
-
-void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
+class WindowProcedure
 {
-	void* eventData;
-
-	if ( evnt == ERIEventType::RIE_MOUSEMOVE )
+public:
+	LRESULT WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 	{
-		static POINTS points;
-		points = MAKEPOINTS( wParam );
-		eventData = ( void* )&points;
-	}
-	else
-	{
-		eventData = ( void* )&wParam;
+		static ERIEventType evnt = ERIEventType::RIE_UNKNOWN;
+		static Uint32 parameter = 0;
+		static Bool inputProcessed = false;
+
+		switch ( message )
+		{
+		case WM_SIZE:
+			graphics::ResizeViewport( LOWORD( lparam ), HIWORD( lparam ) );
+			break;
+			// KEY UP/DOWN
+		case WM_KEYUP:
+			evnt = ERIEventType::RIE_UP;
+			parameter = static_cast< Uint32 >( wparam );
+			inputProcessed = true;
+			break;
+		case WM_KEYDOWN:
+			evnt = ERIEventType::RIE_DOWN;
+			parameter = static_cast< Uint32 >( wparam );
+			inputProcessed = true;
+			break;
+
+			//DESTROY WINDOW
+		case WM_DESTROY:
+			evnt = ERIEventType::RIE_UP;
+			parameter = RI_CLOSE;
+			inputProcessed = true;
+			break;
+
+			//MOUSE MOVEMENT
+		case WM_MOUSEMOVE:
+			evnt = ERIEventType::RIE_MOUSEMOVE;
+			parameter = static_cast< Uint32 >( lparam );
+			inputProcessed = true;
+			break;
+
+			//LMB
+		case WM_LBUTTONDOWN:
+			evnt = ERIEventType::RIE_DOWN;
+			parameter = RI_LMB;
+			inputProcessed = true;
+			break;
+
+		case WM_LBUTTONUP:
+			evnt = ERIEventType::RIE_UP;
+			parameter = RI_LMB;
+			inputProcessed = true;
+			break;
+
+			//RMB
+		case WM_RBUTTONDOWN:
+			evnt = ERIEventType::RIE_DOWN;
+			parameter = RI_RMB;
+			inputProcessed = true;
+			break;
+
+		case WM_RBUTTONUP:
+			evnt = ERIEventType::RIE_UP;
+			parameter = RI_RMB;
+			inputProcessed = true;
+			break;
+
+		default:
+			break;
+		}
+
+		if ( inputProcessed )
+			ProcessRawInput( parameter, evnt );
+
+		return DefWindowProc( hwnd, message, wparam, lparam );
 	}
 
-	if ( GInputManager )
-		GInputManager->DispatchEvent( evnt, eventData );
-}
+	void SetInputManager( IInputManager* input ) { m_input = input; }
+
+private:
+	void ProcessRawInput( Uint32 wParam, ERIEventType evnt )
+	{
+		void* eventData;
+
+		if ( evnt == ERIEventType::RIE_MOUSEMOVE )
+		{
+			static POINTS points;
+			points = MAKEPOINTS( wParam );
+			eventData = ( void* )&points;
+		}
+		else
+		{
+			eventData = ( void* )&wParam;
+		}
+
+		if ( m_input )
+			m_input->DispatchEvent( evnt, eventData );
+	}
+
+	IInputManager* m_input;
+};
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
-	static ERIEventType evnt = ERIEventType::RIE_UNKNOWN;
-	static Uint32 parameter = 0;
-	static Bool inputProcessed = false;
+	WindowProcedure* winProc = nullptr;
 
-	switch ( message )
+	if ( message == WM_NCCREATE )
 	{
-		//KEY
-	case WM_CREATE:
-		break;
-	case WM_SIZE:
-		graphics::ResizeViewport( LOWORD( lparam ), HIWORD( lparam ) );
-		break;
-	case WM_KEYUP:
-		evnt = ERIEventType::RIE_UP;
-		parameter = static_cast< Uint32 >( wparam );
-		inputProcessed = true;
-		break;
-	case WM_KEYDOWN:
-		evnt = ERIEventType::RIE_DOWN;
-		parameter = static_cast< Uint32 >( wparam );
-		inputProcessed = true;
-		break;
+		CREATESTRUCT* createStruct = ( CREATESTRUCT* )lparam;
+		winProc = reinterpret_cast< WindowProcedure* >( createStruct->lpCreateParams );
 
-		//DESTROY WINDOW
-	case WM_DESTROY:
-		evnt = ERIEventType::RIE_UP;
-		parameter = RI_CLOSE;
-		inputProcessed = true;
-		break;
-
-		//MOUSE MOVEMENT
-	case WM_MOUSEMOVE:
-		evnt = ERIEventType::RIE_MOUSEMOVE;
-		parameter = static_cast< Uint32 >( lparam );
-		inputProcessed = true;
-		break;
-
-		//LMB
-	case WM_LBUTTONDOWN:
-		evnt = ERIEventType::RIE_DOWN;
-		parameter = RI_LMB;
-		inputProcessed = true;
-		break;
-
-	case WM_LBUTTONUP:
-		evnt = ERIEventType::RIE_UP;
-		parameter = RI_LMB;
-		inputProcessed = true;
-		break;
-
-		//RMB
-	case WM_RBUTTONDOWN:
-		evnt = ERIEventType::RIE_DOWN;
-		parameter = RI_RMB;
-		inputProcessed = true;
-		break;
-
-	case WM_RBUTTONUP:
-		evnt = ERIEventType::RIE_UP;
-		parameter = RI_RMB;
-		inputProcessed = true;
-		break;
-
-	default:
-		break;
+		if ( SetWindowLongPtr( hwnd, GWLP_USERDATA, ( LONG_PTR )winProc ) == 0 )
+			SC_ASSERT( GetLastError() == 0, "Failed to get user data pointer." );
+	}
+	else
+	{
+		winProc = reinterpret_cast< WindowProcedure* >( GetWindowLongPtr( hwnd, GWLP_USERDATA ) );
 	}
 
-	if ( inputProcessed )
-		ProcessRawInput( parameter, evnt );
-
-	return DefWindowProc( hwnd, message, wparam, lparam );
+	return winProc->WindowProc( hwnd, message, wparam, lparam );
 }
 
 CWindow::CWindow()
+	: m_winProc( new WindowProcedure )
 {
+}
+
+CWindow::~CWindow()
+{
+	delete m_winProc;
 }
 
 bool CWindow::Create( Uint32 width, Uint32 height )
@@ -116,8 +147,6 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 	HINSTANCE hInstance = reinterpret_cast< HINSTANCE >( m_hInstance );
 
 	WNDCLASS wc = { 0 };
-
-	//LRESULT CALLBACK WindowProc( HWND, UINT, WPARAM, LPARAM );
 
 	//wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 	wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -161,7 +190,7 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 		consoleHWND,
 		NULL,
 		reinterpret_cast< HINSTANCE >( m_hInstance ),
-		NULL
+		m_winProc
 		);
 
 	if ( !m_hWnd )
@@ -187,5 +216,5 @@ void CWindow::Tick()
 
 void CWindow::SetInputManager( IInputManager* input )
 {
-	GInputManager = input;
+	m_winProc->SetInputManager( input );
 }
