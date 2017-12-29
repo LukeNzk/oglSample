@@ -331,14 +331,22 @@ namespace graphics
 		
 		Int32 logLength;
 		glGetShaderiv( shaderId, GL_INFO_LOG_LENGTH, &logLength );
-		if ( logLength > 0 )
+		if ( !noErr )
 		{
-			Int8* log = new Int8[ logLength ];
-			glGetShaderInfoLog( shaderId, logLength, NULL, log );
-			SC_ASSERT( false, log );
+			if ( logLength > 0 )
+			{
+				Int8* log = new Int8[ logLength ];
+				glGetShaderInfoLog( shaderId, logLength, NULL, log );
+				SC_ASSERT( false, log );
 
-			delete[] log;
+				delete[] log;
+			}
+			else
+			{
+				SC_ASSERT( false, "Failed to load shader." );
+			}
 		}
+
 
 		delete[] code;
 
@@ -354,16 +362,25 @@ namespace graphics
 		glLinkProgram( program );
 
 		// validate shader
-		Int32 noError;
+		Int32 noErr;
 		Int32 logLength;
-		glGetProgramiv( program, GL_LINK_STATUS, &noError );
+		glGetProgramiv( program, GL_LINK_STATUS, &noErr );
 		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
-		if ( logLength > 0 ) {
-			Int8* log = new Int8[ logLength ];
-			glGetShaderInfoLog( program, logLength, NULL, log );
-			SC_ASSERT( false, log );
 
-			delete[] log;
+		if ( !noErr )
+		{
+			if ( logLength > 0 )
+			{
+				Int8* log = new Int8[ logLength ];
+				glGetShaderInfoLog( program, logLength, NULL, log );
+				SC_ASSERT( false, log );
+
+				delete[] log;
+			}
+			else
+			{
+				SC_ASSERT( false, "Failed to link shaders to program." );
+			}
 		}
 
 		glDetachShader( program, vertexShader );
