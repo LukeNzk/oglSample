@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "utils\utils.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game\game.vcxproj", "{0B2003B8-3ABD-4E58-95AF-E92FD7BC1DF4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rasterizer", "resterizer\rasterizer.vcxproj", "{B48E087A-6819-4B9A-BDF1-89BF8C307352}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{0B2003B8-3ABD-4E58-95AF-E92FD7BC1DF4}.Release|x64.Build.0 = Release|x64
 		{0B2003B8-3ABD-4E58-95AF-E92FD7BC1DF4}.Release|x86.ActiveCfg = Release|Win32
 		{0B2003B8-3ABD-4E58-95AF-E92FD7BC1DF4}.Release|x86.Build.0 = Release|Win32
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Debug|x64.ActiveCfg = Debug|x64
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Debug|x64.Build.0 = Debug|x64
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Debug|x86.ActiveCfg = Debug|Win32
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Debug|x86.Build.0 = Debug|Win32
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Release|x64.ActiveCfg = Release|x64
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Release|x64.Build.0 = Release|x64
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Release|x86.ActiveCfg = Release|Win32
+		{B48E087A-6819-4B9A-BDF1-89BF8C307352}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
