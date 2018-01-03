@@ -20,6 +20,8 @@ Game::~Game()
 
 void Game::LoadResources()
 {
+	const Uint32 data[ 4 ] = { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffff00 };
+	GEngine->SetOverlayData( 2, 2, data );
 }
 
 void Game::Tick( Float dt )

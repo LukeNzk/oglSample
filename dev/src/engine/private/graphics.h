@@ -21,6 +21,7 @@ namespace graphics
 
 	extern Uint32 CreateTexture2D();
 	extern void BindTexture2D( Uint32 texture );
+	extern void UploadOverlayTexture( Uint32 texture, Uint32 width, Uint32 height, const void* data );
 	extern void UploadTexture2D( Uint32 texture, Uint32 width, Uint32 height, const void* data );
 	extern void ActivateTextureUnit0();
 

@@ -23,10 +23,12 @@ public:
 
 	Sprite* CreateSprite();
 	void SetInputManager( IInputManager* input );
+	void SetOverlayData( Uint32 width, Uint32 height, const void* data ) const;
 
 private:
 	WndPtrU			m_window;
 	IGame*			m_game;
+	Sprite*			m_overlaySprite;
 	RendererPtrU	m_renderer;
 	Bool			m_quit;
 };

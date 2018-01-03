@@ -7,10 +7,12 @@
 
 #include "../../utils/public/timer.h"
 #include "../../utils/public/debug.h"
+#include "../../utils/public/macros.h"
 
 Engine::Engine()
 	: m_quit( false )
 	, m_game( nullptr )
+	, m_overlaySprite( nullptr )
 {
 }
 
@@ -27,6 +29,10 @@ void Engine::Init()
 
 	m_renderer.reset( new Renderer() );
 	m_renderer->Init();
+
+	m_overlaySprite = m_renderer->CreateSprite();
+	Uint32 overlayTexture = graphics::CreateTexture2D();
+	m_overlaySprite->SetTexture( overlayTexture );
 }
 
 void Engine::Start( IGame* game )
@@ -62,4 +68,11 @@ Sprite* Engine::CreateSprite()
 void Engine::SetInputManager( IInputManager* input )
 {
 	m_window->SetInputManager( input );
+}
+
+void Engine::SetOverlayData( Uint32 width, Uint32 height, const void* data ) const
+{
+	SC_ASSERT( m_overlaySprite, "No overlay was initialized." );
+	graphics::BindTexture2D( m_overlaySprite->GetTexture() );
+	graphics::UploadOverlayTexture( m_overlaySprite->GetTexture(), width, height, data );
 }

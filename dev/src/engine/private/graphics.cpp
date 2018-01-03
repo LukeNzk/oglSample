@@ -239,6 +239,22 @@ namespace graphics
 		SC_ASSERT( glGetError() == 0, "Failed to bind 2D texture." );
 	}
 
+	void UploadOverlayTexture( Uint32 texture, Uint32 width, Uint32 height, const void* data )
+	{
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data );
+		SC_ASSERT( glGetError() == 0, "Failed to bind 2D texture." );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+		glGenerateMipmap( GL_TEXTURE_2D );
+
+		SC_ASSERT( glGetError() == 0, "Failed to set mipmaps for 2D texture." );
+	}
+
 	void UploadTexture2D( Uint32 texture, Uint32 width, Uint32 height, const void* data )
 	{
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data );
