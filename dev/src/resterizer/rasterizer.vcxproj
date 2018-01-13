@@ -132,9 +132,19 @@
   <ItemGroup>
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\mainRasterizer.cpp" />
+    <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\tgaBuffer.cpp" />
+    <ClCompile Include="src\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\color.h" />
+    <ClInclude Include="src\float4.h" />
+    <ClInclude Include="src\float4x4.h" />
     <ClInclude Include="src\game.h" />
+    <ClInclude Include="src\imageBuffer.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\tgaBuffer.h" />
+    <ClInclude Include="src\triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

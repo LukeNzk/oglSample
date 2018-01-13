@@ -17,9 +17,39 @@
     <ClCompile Include="src\game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tgaBuffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\triangle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\color.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\float4.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\float4x4.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imageBuffer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tgaBuffer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\triangle.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
