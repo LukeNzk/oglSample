@@ -3,6 +3,8 @@
 #include "../../engine/public/input.h"
 #include "../../engine/public/game.h"
 
+class ImageBuffer;
+
 class Game final : public IGame, public IInputManager
 {
 public:
@@ -14,4 +16,5 @@ public:
 	void DispatchEvent( ERIEventType type, void* data ) override;
 
 private:
+	ImageBuffer* m_renderTarget;
 };
