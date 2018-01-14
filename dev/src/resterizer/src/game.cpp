@@ -12,15 +12,20 @@
 #include "tgaBuffer.h"
 #include "triangle.h"
 #include "shader.h"
+#include "model.h"
 
 extern Engine* GEngine;
 
 CTriangle testTriangle;
+Model* testModel;
+
 Shader shader;
 
 Game::Game()
 	: m_renderTarget( new TgaBuffer( 600, 600 ) )
 {
+	testModel = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.1f, 0.1f, 0.1f ) );
+
 	testTriangle.SetVertexPos( 0, float4( 0, 0, 0.0 ) );
 	testTriangle.SetVertexColor( 0, Color( 0xff, 0, 0 ) );
 
@@ -34,6 +39,7 @@ Game::Game()
 Game::~Game()
 {
 	delete m_renderTarget;
+	delete testModel;
 }
 
 void Game::LoadResources()
@@ -45,7 +51,7 @@ void Game::LoadResources()
 void Game::Tick( Float dt )
 {
 	m_renderTarget->Clear( 0xff333333 );
-	testTriangle.Draw( m_renderTarget, &shader );
+	testModel->Draw( m_renderTarget, &shader );
 
 	GEngine->SetOverlayData( m_renderTarget->Width(), m_renderTarget->Height(),
 							 m_renderTarget->GetColorData() );

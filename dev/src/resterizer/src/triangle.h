@@ -11,6 +11,7 @@ class CTriangle
 {
 public:
 	CTriangle();
+	CTriangle( const float4& a, const float4& b, const float4& c );
 
 	void SetVertexPos( Uint32 index, const float4& pos );
 	void Draw( ImageBuffer* buffer, Shader* shader ) const;

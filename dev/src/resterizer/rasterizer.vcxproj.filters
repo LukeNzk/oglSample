@@ -26,6 +26,9 @@
     <ClCompile Include="src\triangle.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\model.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game.h">
@@ -50,6 +53,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\triangle.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

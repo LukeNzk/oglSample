@@ -68,7 +68,15 @@ namespace helper
 }
 
 CTriangle::CTriangle()
-{ }
+{
+}
+
+CTriangle::CTriangle( const float4 & a, const float4 & b, const float4 & c )
+{
+	m_verts[ 0 ] = a;
+	m_verts[ 1 ] = b;
+	m_verts[ 2 ] = c;
+}
 
 void CTriangle::SetVertexPos( Uint32 index, const float4& pos )
 {
@@ -105,19 +113,12 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	float4 ssVerts[ 3 ];
 
 	float4x4 proj;
-	proj.SetProjection( 90.f, buffer->GetAspectRatio(), 0.1f, 1000.f );
+	proj.SetProjection( 65.f, buffer->GetAspectRatio(), 0.1f, 1000.f );
 
 	float4x4 view;
-	view.LookAt( float4( 0, 0, 1 ), float4( 0, 0, -1 ), float4( 0, 1, 0 ) );
+	view.LookAt( float4( 0, 0, 100.3f ), float4( 0, 0, -1, 0 ), float4( 0, 1, 0, 0 ) );
 
 	shader->SetViewProjectionMatrix( view, proj );
-
-	float4x4 model = float4x4::Identity();
-	static float rot = 0;
-	rot += 1.5f;
-
-	model.SetRotation( rot, float4( 0, 1, 0 ) );
-	shader->SetModelMatrix( model );
 
 	// convert vertices to screen space
 	for ( int i = 0; i < 3; ++i )
@@ -222,16 +223,19 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					+ bcc[ 1 ] * ssVerts[ 1 ].z
 					+ bcc[ 2 ] * ssVerts[ 2 ].z;
 
-				if ( depth < buffer->GetDepth( x, y ) )
+				if ( depth > 0.1f )
 				{
-					float4 pixelPos = 
-						m_verts[ 0 ] * bcc[ 0 ]
-						+ m_verts[ 1 ] * bcc[ 1 ]
-						+ m_verts[ 2 ] * bcc[ 2 ];
+					if ( depth < buffer->GetDepth( x, y ) )
+					{
+						float4 pixelPos =
+							m_verts[ 0 ] * bcc[ 0 ]
+							+ m_verts[ 1 ] * bcc[ 1 ]
+							+ m_verts[ 2 ] * bcc[ 2 ];
 
-					color = shader->PixelShader( color, pixelPos );
-					buffer->WriteColor( x, y, color.GetARGB8() );
-					buffer->WriteDepth( x, y, depth );
+						color = shader->PixelShader( color, pixelPos );
+						buffer->WriteColor( x, y, color.GetARGB8() );
+						buffer->WriteDepth( x, y, depth );
+					}
 				}
 			}
 		}

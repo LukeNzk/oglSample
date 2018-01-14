@@ -20,10 +20,7 @@ void Shader::SetModelMatrix( const float4x4& model )
 
 void Shader::UpdateMVP()
 {
-	m_projection.Dot( m_view, m_mvp );
-	float4x4 res;
-	m_mvp.Dot( m_model, res );
-	m_mvp = res;
+	m_mvp = m_projection * m_view * m_model;;
 	m_mvpDirty = false;
 }
 
@@ -31,6 +28,7 @@ Color Shader::PixelShader( Color col, const float4& pos ) const
 {
 	const float4 lightPos( 1, 1, 1 );
 
+	return col;
 	const float4 lToP = pos - lightPos;
 	const float magSqr = lToP.SqrMagnitude();
 

@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\mainRasterizer.cpp" />
+    <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\tgaBuffer.cpp" />
     <ClCompile Include="src\triangle.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="src\float4x4.h" />
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\imageBuffer.h" />
+    <ClInclude Include="src\model.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\tgaBuffer.h" />
     <ClInclude Include="src\triangle.h" />

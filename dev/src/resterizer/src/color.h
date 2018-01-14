@@ -9,6 +9,11 @@ public:
 		Set( 0, 0, 0 );
 	}
 
+	Color( Uint32 col )
+	{
+		m_rgba8 = col;
+	}
+
 	Color( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 0xff )
 	{
 		Set( r, g, b, a );
@@ -26,6 +31,10 @@ public:
 	{ 
 		return m_rgba8;
 	}
+
+	static Color Red() { return Color( 255, 0, 0 ); }
+	static Color Green() { return Color( 0, 255, 0 ); }
+	static Color Blue() { return Color( 0, 0, 255 ); }
 
 public:
 	union

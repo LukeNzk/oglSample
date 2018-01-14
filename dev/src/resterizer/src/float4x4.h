@@ -25,17 +25,52 @@ public:
 
 	void Dot( const float4x4& other, float4x4& dst ) const
 	{
+		dst = Zero();
 		for ( int i = 0; i < 4; ++i )
 		{
 			for ( int j = 0; j < 4; ++j )
 			{
-				dst[ i ][ j ] = 0;
 				for ( int k = 0; k < 4; ++k )
 				{
-					dst[ i ][ j ] = dst[ i ][ j ] + r[ i ][ k ] * other[ k ][ j ];
+					dst[ i ][ j ] += r[ i ][ k ] * other[ k ][ j ];
 				}
 			}
 		}
+	}
+
+	static float4x4 Mul( const float4x4& a, const float4x4& b )
+	{
+		float4x4 res = Zero();
+		for ( int i = 0; i < 4; i++ )
+		{
+			for ( int j = 0; j < 4; j++ )
+			{
+				for ( int k = 0; k < 4; k++ )
+				{
+					res[ i ][ j ] += a[ i ][ k ] * b[ k ][ j ];
+				}
+			}
+		}
+
+		return res;
+	}
+
+	float4x4 operator*( const float4x4& other )
+	{
+		return float4x4::Mul( *this, other );
+	}
+
+	static float4x4 Zero()
+	{
+		static const float4 mat[ 4 ] =
+		{
+			{ 0.f, 0.f, 0.f, 0.f },
+			{ 0.f, 0.f, 0.f, 0.f },
+			{ 0.f, 0.f, 0.f, 0.f },
+			{ 0.f, 0.f, 0.f, 0.f }
+		};
+
+		return float4x4( mat );
 	}
 
 	void GetColumn( Uint32 n, float4& dst )
@@ -79,35 +114,43 @@ public:
 		const Float PIf = 3.14159265358979f / 360.0f;
 		fovy *= PIf;
 
-		const Float nearMinusFarInv = 1.f / ( near - far );
+		const Float near_FarInv = 1.f / ( near - far );
 		const Float f = std::cosf( fovy ) / std::sinf( fovy );
 		r[ 0 ] = float4( f / ar, 0.f, 0.f, 0.f );
 		r[ 1 ] = float4( 0.f, f, 0.f, 0.f );
-		r[ 2 ] = float4( 0.f, 0.f, ( near + far ) * nearMinusFarInv, -1.f );
-		r[ 3 ] = float4( 0.f, 0.f, 2.f * near * far * nearMinusFarInv, 0.f );
+		r[ 2 ] = float4( 0.f, 0.f, ( near + far ) * near_FarInv, 2.f * near * far * near_FarInv );
+		r[ 3 ] = float4( 0.f, 0.f, -1.f, 0.f );
 	}
 
-	void LookAt( float4 eye, float4 center, float4 up )
+	void LookAt( float4 eye, float4 target, float4 up )
 	{
-		float4 f = ( center - eye );    // The "forward" vector.
+		float4 f = ( eye - target );    // forward
 		f.Normalize();
 
 		up.Normalize();
-		float4 s = float4::Cross( f, up );// The "right" vector.
-		float4 u = float4::Cross( s, f );
+		float4 rt = float4::Cross( up, f ); // right
+		rt.Normalize();
 
-		r[ 0 ] = float4( s[ 0 ], u[ 0 ], -f[ 0 ], 0.f );
-		r[ 1 ] = float4( s[ 1 ], u[ 1 ], -f[ 1 ], 0.f );
-		r[ 2 ] = float4( s[ 2 ], u[ 2 ], -f[ 2 ], 0.f );
-		r[ 3 ] = float4( -eye[ 0 ], -eye[ 1 ], -eye[ 2 ], 1.f );
+		float4 u = float4::Cross( f , rt ); // up
+		u.Normalize();
+
+		r[ 0 ] = float4( rt.x, rt.y, rt.z, -eye.x );
+		r[ 1 ] = float4( u.x, u.y, u.z, -eye.y );
+		r[ 2 ] = float4( -f.x, -f.y, -f.z, -eye.z );
+		r[ 3 ] = float4( 0.f, 0.f, 0.f, 1.f );
+
+		//r[ 0 ] = float4( rt[ 0 ], u[ 0 ], -f[ 0 ], 0.f );
+		//r[ 1 ] = float4( rt[ 1 ], u[ 1 ], -f[ 1 ], 0.f );
+		//r[ 2 ] = float4( rt[ 2 ], u[ 2 ], -f[ 2 ], 0.f );
+		//r[ 3 ] = float4( -eye[ 0 ], -eye[ 1 ], -eye[ 2 ], 1.f );
 	}
 
 	void SetTranslation( float4 vec )
 	{
-		r[ 0 ] = float4( 1.f, 0.f, 0.f, 0.f );
-		r[ 1 ] = float4( 0.f, 1.f, 0.f, 0.f );
-		r[ 2 ] = float4( 0.f, 0.f, 1.f, 0.f );
-		r[ 3 ] = float4( vec.x, vec.y, vec.z, 1.f );
+		r[ 0 ] = float4( 1.f, 0.f, 0.f, vec.x );
+		r[ 1 ] = float4( 0.f, 1.f, 0.f, vec.y );
+		r[ 2 ] = float4( 0.f, 0.f, 1.f, vec.z );
+		r[ 3 ] = float4( 0.f, 0.f, 0.f, 1.f );
 	}
 
 	void SetScale( float4 s )
@@ -132,7 +175,7 @@ public:
 
 		r[ 1 ] = float4( axis.y * axis.x * oneC + axis.z * s,
 						 axis.y * axis.y * oneC + c,
-						 axis.y * axis.z - oneC + axis.x * s,
+						 axis.y * axis.z * oneC - axis.x * s,
 						 0.f );
 
 		r[ 2 ] = float4( axis.z * axis.x * oneC - axis.y * s,
@@ -157,30 +200,30 @@ public:
 	static float4 Mul( const float4x4& mat, const float4& vec )
 	{
 		float4 result;
-		\
+
 		result[ 0 ] =
-			vec[ 0 ] * mat[ 0 ][ 0 ]
-			+ vec[ 1 ] * mat[ 0 ][ 1 ]
-			+ vec[ 2 ] * mat[ 0 ][ 2 ]
-			+ vec[ 3 ] * mat[ 0 ][ 3 ];
+			vec.x * mat[ 0 ][ 0 ]
+			+ vec.y * mat[ 0 ][ 1 ]
+			+ vec.z * mat[ 0 ][ 2 ]
+			+ vec.w * mat[ 0 ][ 3 ];
 
 		result[ 1 ] =
-			vec[ 0 ] * mat[ 1 ][ 0 ]
-			+ vec[ 1 ] * mat[ 1 ][ 1 ]
-			+ vec[ 2 ] * mat[ 1 ][ 2 ]
-			+ vec[ 3 ] * mat[ 1 ][ 3 ];
+			vec.x * mat[ 1 ][ 0 ]
+			+ vec.y * mat[ 1 ][ 1 ]
+			+ vec.z * mat[ 1 ][ 2 ]
+			+ vec.w * mat[ 1 ][ 3 ];
 
 		result[ 2 ] =
-			vec[ 0 ] * mat[ 2 ][ 0 ]
-			+ vec[ 1 ] * mat[ 2 ][ 1 ]
-			+ vec[ 2 ] * mat[ 2 ][ 2 ]
-			+ vec[ 3 ] * mat[ 2 ][ 3 ];
+			vec.x * mat[ 2 ][ 0 ]
+			+ vec.y * mat[ 2 ][ 1 ]
+			+ vec.z * mat[ 2 ][ 2 ]
+			+ vec.w * mat[ 2 ][ 3 ];
 
 		result[ 3 ] =
-			vec[ 0 ] * mat[ 3 ][ 0 ]
-			+ vec[ 1 ] * mat[ 3 ][ 1 ]
-			+ vec[ 2 ] * mat[ 3 ][ 2 ]
-			+ vec[ 3 ] * mat[ 3 ][ 3 ];
+			vec.x * mat[ 3 ][ 0 ]
+			+ vec.y * mat[ 3 ][ 1 ]
+			+ vec.z * mat[ 3 ][ 2 ]
+			+ vec.w * mat[ 3 ][ 3 ];
 
 		return result;
 	}
