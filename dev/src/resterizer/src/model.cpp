@@ -57,12 +57,12 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 		7, 6, 3,
 
 		// top
-		4, 6, 8,
+		4, 6, 7,
 		4, 5, 6,
 
 		// bottom
 		0, 2, 1,
-		0, 2, 3,
+		0, 3, 2,
 
 		// left
 		0, 4, 7,
@@ -73,7 +73,6 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 		1, 6, 5
 	};
 
-	const Uint32 faces = 2;
 
 	float4 cube[ 8 ];
 	for ( Uint32 i = 0; i < 8; ++i )
@@ -88,7 +87,8 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 
 	Model* result = new Model();
 	
-	const Uint32 tris = 4;
+	const Uint32 faces = 6;
+	const Uint32 tris = faces * 2;
 	for ( Uint32 i = 0; i < tris; ++i )
 	{
 		CTriangle* triangle = new CTriangle(
@@ -120,10 +120,10 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 void Model::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
 	float4x4 rotate = float4x4::Identity();
-	static float rot = 90.0f;
+	static float rot = 0.0f;
 	rot += 1;
 
-	rotate.SetRotation( rot, float4( 0, 0, 1 ) );
+	rotate.SetRotation( rot, float4( 1, 1, 0 ).Normalized() );
 
 	float4x4 translate = float4x4::Identity();
 	translate.SetTranslation( { 0.2f, 0.2f, 0, 1 } );
