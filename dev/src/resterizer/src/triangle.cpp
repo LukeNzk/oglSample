@@ -82,8 +82,26 @@ void CTriangle::SetVertexColor( Uint32 index, Color col )
 	m_vertexColors[ index ] = col;
 }
 
+void TestMath()
+{
+	const float4 rows0[ 4 ] = {
+		{ 1, 2, 3, 4 },
+		{ 5, 6, 7, 8 },
+		{ 9, 10, 11, 12 },
+		{ 13, 14, 15, 16 } };
+
+	float4x4 mat0( rows0 );
+	float4x4 mat1( rows0 );
+	mat1.Transpose();
+
+	float4 mul( 0, 3, 6 );
+	mul = float4x4::Mul( mat0, mul );
+}
+
+
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
+	TestMath();
 	float4 ssVerts[ 3 ];
 
 	float4x4 proj;
@@ -93,7 +111,13 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	view.LookAt( float4( 0, 0, 1 ), float4( 0, 0, -1 ), float4( 0, 1, 0 ) );
 
 	shader->SetViewProjectionMatrix( view, proj );
-	shader->SetModelMatrix( float4x4::Identity() );
+
+	float4x4 model = float4x4::Identity();
+	static float rot = 0;
+	rot += 1.5f;
+
+	model.SetRotation( rot, float4( 0, 1, 0 ) );
+	shader->SetModelMatrix( model );
 
 	// convert vertices to screen space
 	for ( int i = 0; i < 3; ++i )

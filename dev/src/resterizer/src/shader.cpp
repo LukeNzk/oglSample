@@ -7,7 +7,8 @@ Shader::Shader()
 
 void Shader::SetViewProjectionMatrix( const float4x4& view, const float4x4& projection )
 {
-	projection.Dot( view, m_viewProjection );
+	m_view = view;
+	m_projection = projection;
 	m_mvpDirty = true;
 }
 
@@ -19,7 +20,10 @@ void Shader::SetModelMatrix( const float4x4& model )
 
 void Shader::UpdateMVP()
 {
-	m_viewProjection.Dot( m_model, m_mvp );
+	m_projection.Dot( m_view, m_mvp );
+	float4x4 res;
+	m_mvp.Dot( m_model, res );
+	m_mvp = res;
 	m_mvpDirty = false;
 }
 

@@ -23,8 +23,10 @@ public:
 
 private:
 	// vertex shader
-	float4x4 m_viewProjection;
+	float4x4 m_view;
+	float4x4 m_projection;
 	float4x4 m_model;
+
 	float4x4 m_mvp;
 	
 	// pixel shader

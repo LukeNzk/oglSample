@@ -19,15 +19,15 @@ CTriangle testTriangle;
 Shader shader;
 
 Game::Game()
-	: m_renderTarget( new TgaBuffer( 800, 600 ) )
+	: m_renderTarget( new TgaBuffer( 600, 600 ) )
 {
-	testTriangle.SetVertexPos( 0, float4( 0, 0, 0.5 ) );
+	testTriangle.SetVertexPos( 0, float4( 0, 0, 0.0 ) );
 	testTriangle.SetVertexColor( 0, Color( 0xff, 0, 0 ) );
 
-	testTriangle.SetVertexPos( 1, float4( 1.f, 0.f ) );
+	testTriangle.SetVertexPos( 1, float4( 1.f, 0.f, 0.f ) );
 	testTriangle.SetVertexColor( 1, Color( 0, 0xff, 0 ) );
 
-	testTriangle.SetVertexPos( 2, float4( 0, 1.0f ) );
+	testTriangle.SetVertexPos( 2, float4( 0, 1.0f, 0.f ) );
 	testTriangle.SetVertexColor( 2, Color( 0, 0, 0xff ) );
 }
 
@@ -44,7 +44,7 @@ void Game::LoadResources()
 
 void Game::Tick( Float dt )
 {
-	m_renderTarget->Clear( 0x00000000 );
+	m_renderTarget->Clear( 0xff333333 );
 	testTriangle.Draw( m_renderTarget, &shader );
 
 	GEngine->SetOverlayData( m_renderTarget->Width(), m_renderTarget->Height(),

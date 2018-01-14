@@ -35,12 +35,22 @@ struct float4
 
 	inline float Magnitude() const
 	{
-		return std::sqrtf(SqrMagnitude());
+		return std::sqrtf( SqrMagnitude() );
+	}
+
+	inline float Magnitude4() const
+	{
+		return std::sqrtf( SqrMagnitude4() );
+	}
+
+	inline float SqrMagnitude4() const
+	{
+		return x * x + y * y + z * z + w * w;
 	}
 
 	inline float SqrMagnitude() const
 	{
-		return x * x + y * y + z * z + w * w;
+		return x * x + y * y + z * z;
 	}
 
 	inline float* GetPtr() 

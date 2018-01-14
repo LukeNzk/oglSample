@@ -117,7 +117,9 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 		winProc = reinterpret_cast< WindowProcedure* >( createStruct->lpCreateParams );
 
 		if ( SetWindowLongPtr( hwnd, GWLP_USERDATA, ( LONG_PTR )winProc ) == 0 )
+		{
 			SC_ASSERT( GetLastError() == 0, "Failed to get user data pointer." );
+		}
 	}
 	else
 	{

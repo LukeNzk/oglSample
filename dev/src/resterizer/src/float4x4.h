@@ -87,20 +87,18 @@ public:
 		r[ 3 ] = float4( 0.f, 0.f, 2.f * near * far * nearMinusFarInv, 0.f );
 	}
 
-	void LookAt( float4 eye, float4 target, float4 up )
+	void LookAt( float4 eye, float4 center, float4 up )
 	{
-		float4 zaxis = ( eye - target );    // The "forward" vector.
-		zaxis.Normalize();
+		float4 f = ( center - eye );    // The "forward" vector.
+		f.Normalize();
 
-		float4 xaxis = float4::Cross( up, zaxis );// The "right" vector.
-		xaxis.Normalize();
+		up.Normalize();
+		float4 s = float4::Cross( f, up );// The "right" vector.
+		float4 u = float4::Cross( s, f );
 
-		float4 yaxis = float4::Cross( zaxis, xaxis );
-		yaxis.Normalize();
-
-		r[ 0 ] = float4( xaxis.x, xaxis.y, xaxis.z, 0.f );
-		r[ 1 ] = float4( yaxis.x, yaxis.y, yaxis.z, 0.f );
-		r[ 2 ] = float4( zaxis.x, zaxis.y, zaxis.z, 0.f );
+		r[ 0 ] = float4( s[ 0 ], u[ 0 ], -f[ 0 ], 0.f );
+		r[ 1 ] = float4( s[ 1 ], u[ 1 ], -f[ 1 ], 0.f );
+		r[ 2 ] = float4( s[ 2 ], u[ 2 ], -f[ 2 ], 0.f );
 		r[ 3 ] = float4( -eye[ 0 ], -eye[ 1 ], -eye[ 2 ], 1.f );
 	}
 
@@ -128,17 +126,17 @@ public:
 		const Float oneC = 1.f - c;
 
 		r[ 0 ] = float4( axis.x * axis.x * oneC + c,
-						 axis.x * axis.y * oneC + axis.z * s,
-						 axis.x * axis.z * oneC - axis.y * s,
+						 axis.x * axis.y * oneC - axis.z * s,
+						 axis.x * axis.z * oneC + axis.y * s,
 						 0.f );
 
-		r[ 1 ] = float4( axis.y * axis.x * oneC - axis.z * s,
+		r[ 1 ] = float4( axis.y * axis.x * oneC + axis.z * s,
 						 axis.y * axis.y * oneC + c,
-						 axis.y * axis.z * oneC + axis.x * s,
+						 axis.y * axis.z - oneC + axis.x * s,
 						 0.f );
 
-		r[ 2 ] = float4( axis.z * axis.x * oneC + axis.y * s,
-						 axis.z * axis.y * oneC - axis.x * s,
+		r[ 2 ] = float4( axis.z * axis.x * oneC - axis.y * s,
+						 axis.z * axis.y * oneC + axis.x * s,
 						 axis.z * axis.z * oneC + c,
 						 0.f );
 
@@ -159,28 +157,29 @@ public:
 	static float4 Mul( const float4x4& mat, const float4& vec )
 	{
 		float4 result;
+		\
 		result[ 0 ] =
 			vec[ 0 ] * mat[ 0 ][ 0 ]
-			+ vec[ 1 ] * mat[ 1 ][ 0 ]
-			+ vec[ 2 ] * mat[ 2 ][ 0 ]
-			+ vec[ 3 ] * mat[ 3 ][ 0 ];
+			+ vec[ 1 ] * mat[ 0 ][ 1 ]
+			+ vec[ 2 ] * mat[ 0 ][ 2 ]
+			+ vec[ 3 ] * mat[ 0 ][ 3 ];
 
 		result[ 1 ] =
-			vec[ 0 ] * mat[ 0 ][ 1 ]
+			vec[ 0 ] * mat[ 1 ][ 0 ]
 			+ vec[ 1 ] * mat[ 1 ][ 1 ]
-			+ vec[ 2 ] * mat[ 2 ][ 1 ]
-			+ vec[ 3 ] * mat[ 3 ][ 1 ];
+			+ vec[ 2 ] * mat[ 1 ][ 2 ]
+			+ vec[ 3 ] * mat[ 1 ][ 3 ];
 
 		result[ 2 ] =
-			vec[ 0 ] * mat[ 0 ][ 2 ]
-			+ vec[ 1 ] * mat[ 1 ][ 2 ]
+			vec[ 0 ] * mat[ 2 ][ 0 ]
+			+ vec[ 1 ] * mat[ 2 ][ 1 ]
 			+ vec[ 2 ] * mat[ 2 ][ 2 ]
-			+ vec[ 3 ] * mat[ 3 ][ 2 ];
+			+ vec[ 3 ] * mat[ 2 ][ 3 ];
 
 		result[ 3 ] =
-			vec[ 0 ] * mat[ 0 ][ 3 ]
-			+ vec[ 1 ] * mat[ 1 ][ 3 ]
-			+ vec[ 2 ] * mat[ 2 ][ 3 ]
+			vec[ 0 ] * mat[ 3 ][ 0 ]
+			+ vec[ 1 ] * mat[ 3 ][ 1 ]
+			+ vec[ 2 ] * mat[ 3 ][ 2 ]
 			+ vec[ 3 ] * mat[ 3 ][ 3 ];
 
 		return result;
