@@ -180,6 +180,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	// rasterization loop
 	float depth = 0.0f;
 	float4 pixelPos;
+	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
 	for ( Int32 y = minY; y < maxY; ++y )
 	{
@@ -188,40 +189,27 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 			pixelPos.x = static_cast< Float > ( x );
 			pixelPos.y = static_cast< Float > ( y );
 
-			// calculate barycentric coordinates
-			{
-				bcc[ 0 ] =
-					detTInv *
-					(
-						dy12 * ( pixelPos.x - ssVerts[ 2 ].x )
-						+ dx21 * ( pixelPos.y - ssVerts[ 2 ].y )
-						);
-
-				bcc[ 1 ] =
-					detTInv *
-					(
-						dy20 * ( pixelPos.x - ssVerts[ 2 ].x )
-						+ dx20 * ( pixelPos.y - ssVerts[ 2 ].y )
-						);
-
-				bcc[ 2 ] = 1.0f - bcc[ 0 ] - bcc[ 1 ];
-			}
-
-			Color color =
-				bcc[ 0 ] * m_vertexColors[ 0 ]
-				+ bcc[ 1 ] * m_vertexColors[ 1 ]
-				+ bcc[ 2 ] * m_vertexColors[ 2 ];
-
-
-			Uint32 argb = color.GetARGB8();
-
 			// check intersections
-			if ( helper::Intersects( ssVerts, pixelPos ) )
+			Float w0 = helper::EdgeFunction( ssVerts[ 1 ], ssVerts[ 2 ], pixelPos );
+			Float w1 = helper::EdgeFunction( ssVerts[ 2 ], ssVerts[ 0 ], pixelPos );
+			Float w2 = helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], pixelPos );
+
+			if ( w0 >= 0 && w1 >= 0 && w2 >= 0 )
 			{
+				w0 *= invArea;
+				w1 *= invArea;
+				w2 *= invArea;
+
+				// calculate barycentric coordinates
+				Color color =
+					w0 * m_vertexColors[ 0 ]
+					+ w1 * m_vertexColors[ 1 ]
+					+ w2 * m_vertexColors[ 2 ];
+
 				depth =
-					bcc[ 0 ] * ssVerts[ 0 ].z
-					+ bcc[ 1 ] * ssVerts[ 1 ].z
-					+ bcc[ 2 ] * ssVerts[ 2 ].z;
+					w0 * ssVerts[ 0 ].z
+					+ w1 * ssVerts[ 1 ].z
+					+ w2 * ssVerts[ 2 ].z;
 
 				if ( depth > 0.1f )
 				{
