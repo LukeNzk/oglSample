@@ -75,6 +75,22 @@ namespace helper
 	{
 		return std::fmaxf( a, std::fmaxf( b, c ) );
 	}
+
+	inline void ConvertToScreenSpace( const ImageBuffer* buffer, 
+									  const float4x4& mvp, 
+									  const float4 wsPos[ 3 ], 
+									  float4 ssPos[ 3 ] )
+	{
+		for ( int i = 0; i < 3; ++i )
+		{
+			//shader->VertexShader( m_verts[ i ], ssVerts[ i ] );
+			ssPos[ i ] = float4x4::Mul( mvp, wsPos[ i ] );
+			ssPos[ i ].x *= buffer->Width();
+			ssPos[ i ].y *= buffer->Height();
+			ssPos[ i ].z = 1.f / ssPos[ i ].z;
+			//ssVerts[ i ].w = 1.f;
+		}
+	}
 }
 
 CTriangle::CTriangle()
@@ -119,26 +135,21 @@ void TestMath()
 
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
-	TestMath();
-	float4 ssVerts[ 3 ];
-
+	//TestMath();
 	float4x4 proj;
 	proj.SetProjection( 65.f, buffer->GetAspectRatio(), 0.1f, 1000.f );
 
 	float4x4 view;
-	view.LookAt( float4( 0, 0, 100.3f ), float4( 0, 0, -1, 0 ), float4( 0, 1, 0, 0 ) );
+	view.LookAt( float4( 0, 0, 10.3f ), float4( 0, 0, -1, 0 ), float4( 0, 1, 0, 0 ) );
 
 	shader->SetViewProjectionMatrix( view, proj );
 
-	// convert vertices to screen space
-	for ( int i = 0; i < 3; ++i )
-	{
-		shader->VertexShader( m_verts[ i ], ssVerts[ i ] );
-		ssVerts[ i ].x *= buffer->Width();
-		ssVerts[ i ].y *= buffer->Height();
-		ssVerts[ i ].z = 1.f / ssVerts[ i ].z;
-		ssVerts[ i ].w = 1.f;
-	}
+	float4x4 model = float4x4::Identity();
+	model.SetTranslation( { 0.2f, 0.2f, 10.f }  );
+	float4x4 mvp = proj * view * model;
+
+	float4 ssVerts[ 3 ];
+	helper::ConvertToScreenSpace( buffer, mvp, m_verts, ssVerts );
 
 	// calculate bounds
 	const Float xMin = helper::Min3f( ssVerts[ 0 ].x, ssVerts[ 1 ].x, ssVerts[ 2 ].x );
@@ -154,18 +165,17 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
 
 	// calculate normal
-	const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
-	shader->SetNormal( normal );
+	//const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
+	//shader->SetNormal( normal );
 
 	// rasterization loop
-	float depth = 0.0f;
-	float4 pixelPos;
 	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
 	for ( Uint32 y = minY; y < maxY; ++y )
 	{
 		for ( Uint32 x = minX; x < maxX; ++x )
 		{
+			float4 pixelPos;
 			pixelPos.x = static_cast< Float > ( x );
 			pixelPos.y = static_cast< Float > ( y );
 
@@ -191,7 +201,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					ssVerts[ 1 ].z * w1 +
 					ssVerts[ 2 ].z * w2;
 
-				depth = 1.f / oneOverZ;
+				const Float depth = 1.f / oneOverZ;
 
 				if ( depth > 0.1f && depth < 1000.f )
 				{
@@ -202,7 +212,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 							+ m_verts[ 1 ] * w1
 							+ m_verts[ 2 ] * w2;
 
-						color = shader->PixelShader( color, pixelPos );
+						//color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
 						buffer->WriteDepth( x, y, depth );
 					}

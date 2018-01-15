@@ -109,17 +109,28 @@ public:
 		}
 	}
 
-	void SetProjection( Float fovy, Float ar, Float near, Float far )
+	void SetProjection( Float fov, Float ar, Float near, Float far )
 	{
-		const Float PIf = 3.14159265358979f / 360.0f;
-		fovy *= PIf;
+		static const Float PIf = 3.14159265358979f / 180.f;
 
-		const Float near_FarInv = 1.f / ( near - far );
-		const Float f = std::cosf( fovy ) / std::sinf( fovy );
-		r[ 0 ] = float4( f / ar, 0.f, 0.f, 0.f );
-		r[ 1 ] = float4( 0.f, f, 0.f, 0.f );
-		r[ 2 ] = float4( 0.f, 0.f, ( near + far ) * near_FarInv, 2.f * near * far * near_FarInv );
-		r[ 3 ] = float4( 0.f, 0.f, -1.f, 0.f );
+		const Float far_nearInv = 1.f / ( far - near );
+		const Float s = 1.f / std::tanf( 0.5f * fov * PIf );
+
+		r[ 0 ] = float4( s / ar, 0.f, 0.f, 0.f );
+		r[ 1 ] = float4( 0.f, s, 0.f, 0.f );
+		r[ 2 ] = float4( 0.f, 0.f, - far * far_nearInv, -near * far * far_nearInv );
+		r[ 3 ] = float4( 0.f, 0.f, 1.f, 0.f );
+
+		//const Float PIf = 3.14159265358979f / 360.0f;
+		//fovy *= PIf;
+
+		//const Float near_FarInv = 1.f / ( near - far );
+		//const Float f = std::cosf( fovy ) / std::sinf( fovy );
+
+		//r[ 0 ] = float4( f / ar,	0.f,	0.f,							0.f );
+		//r[ 1 ] = float4( 0.f,		-f,		0.f,							0.f );
+		//r[ 2 ] = float4( 0.f,		0.f,	( near + far ) * near_FarInv,	2.f * near * far * near_FarInv );
+		//r[ 3 ] = float4( 0.f,		0.f,	-1.f,							0.f );
 	}
 
 	void LookAt( float4 eye, float4 target, float4 up )
