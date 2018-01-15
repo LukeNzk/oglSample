@@ -65,6 +65,16 @@ namespace helper
 
 		return val;
 	}
+
+	Float Min3f( Float a, Float b, Float c )
+	{
+		return std::fminf( a, std::fminf( b, c ) );
+	}
+
+	Float Max3f( Float a, Float b, Float c )
+	{
+		return std::fmaxf( a, std::fmaxf( b, c ) );
+	}
 }
 
 CTriangle::CTriangle()
@@ -131,34 +141,17 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	}
 
 	// calculate bounds
-	Int32 minX = ( Int32 )ssVerts[ 0 ].x;
-	Int32 minY = ( Int32 )ssVerts[ 0 ].y;
+	const Float xMin = helper::Min3f( ssVerts[ 0 ].x, ssVerts[ 1 ].x, ssVerts[ 2 ].x );
+	const Float yMin = helper::Min3f( ssVerts[ 0 ].y, ssVerts[ 1 ].y, ssVerts[ 2 ].y );
 
-	Int32 maxX = ( Int32 )ssVerts[ 0 ].x;
-	Int32 maxY = ( Int32 )ssVerts[ 0 ].y;
-
-	for ( Uint32 i = 1; i < 3; ++i )
-	{
-		// min
-		if ( ssVerts[ i ].x < minX )
-			minX = ( Int32 )ssVerts[ i ].x;
-
-		if ( ssVerts[ i ].y < minY )
-			minY = ( Int32 )ssVerts[ i ].y;
-
-		// max
-		if ( ssVerts[ i ].x > maxX )
-			maxX = ( Int32 )ssVerts[ i ].x;
-
-		if ( ssVerts[ i ].y > maxY )
-			maxY = ( Int32 )ssVerts[ i ].y;
-	}
+	const Float xMax = helper::Max3f( ssVerts[ 0 ].x, ssVerts[ 1 ].x, ssVerts[ 2 ].x );
+	const Float yMax = helper::Max3f( ssVerts[ 0 ].y, ssVerts[ 1 ].y, ssVerts[ 2 ].y );
 
 	// clamp bounds
-	minX = helper::Clamp( 0, buffer->Width(), minX );
-	minY = helper::Clamp( 0, buffer->Height(), minY );
-	maxX = helper::Clamp( 0, buffer->Width(), maxX );
-	maxY = helper::Clamp( 0, buffer->Height(), maxY );
+	const Uint32 minX = helper::Clamp( 0, buffer->Width(), ( Int32 )std::floor( xMin ) );
+	const Uint32 minY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMin ) );
+	const Uint32 maxX = helper::Clamp( 0, buffer->Width(), ( Int32 )std::floor( xMax ) );
+	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
 
 	// calculate normal
 	const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
@@ -169,9 +162,9 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	float4 pixelPos;
 	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
-	for ( Int32 y = minY; y < maxY; ++y )
+	for ( Uint32 y = minY; y < maxY; ++y )
 	{
-		for ( Int32 x = minX; x < maxX; ++x )
+		for ( Uint32 x = minX; x < maxX; ++x )
 		{
 			pixelPos.x = static_cast< Float > ( x );
 			pixelPos.y = static_cast< Float > ( y );
@@ -204,11 +197,6 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 				{
 					if ( depth < buffer->GetDepth( x, y ) )
 					{
-						//float4 pixelPos =
-						//	m_verts[ 0 ] * bcc[ 0 ]
-						//	+ m_verts[ 1 ] * bcc[ 1 ]
-						//	+ m_verts[ 2 ] * bcc[ 2 ];
-
 						const float4 pixelPos =
 							m_verts[ 0 ] * w0
 							+ m_verts[ 1 ] * w1

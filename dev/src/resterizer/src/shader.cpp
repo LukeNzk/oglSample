@@ -20,7 +20,7 @@ void Shader::SetModelMatrix( const float4x4& model )
 
 void Shader::UpdateMVP()
 {
-	m_mvp = m_projection * m_view * m_model;;
+	m_mvp = m_projection * m_view * m_model;
 	m_mvpDirty = false;
 }
 
