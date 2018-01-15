@@ -123,10 +123,10 @@ void Model::Draw( ImageBuffer* buffer, Shader* shader ) const
 	static float rot = 0.0f;
 	rot += 1;
 
-	rotate.SetRotation( rot, float4( 1, 1, 0 ).Normalized() );
+	rotate.SetRotation( rot, float4( 0, 1, 0 ).Normalized() );
 
 	float4x4 translate = float4x4::Identity();
-	translate.SetTranslation( { 0.2f, 0.2f, 0, 1 } );
+	translate.SetTranslation( { 0.2f, 0.2f, 10.f, 1 } );
 	float4x4 transform = translate * rotate;
 
 	shader->SetModelMatrix( transform );

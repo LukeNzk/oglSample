@@ -24,7 +24,7 @@ Shader shader;
 Game::Game()
 	: m_renderTarget( new TgaBuffer( 600, 600 ) )
 {
-	testModel = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.1f, 0.1f, 0.1f ) );
+	testModel = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
 
 	testTriangle.SetVertexPos( 0, float4( 0, 0, 0.0 ) );
 	testTriangle.SetVertexColor( 0, Color( 0xff, 0, 0 ) );

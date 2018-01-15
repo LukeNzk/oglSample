@@ -126,6 +126,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 		shader->VertexShader( m_verts[ i ], ssVerts[ i ] );
 		ssVerts[ i ].x *= buffer->Width();
 		ssVerts[ i ].y *= buffer->Height();
+		ssVerts[ i ].z = 1.f / ssVerts[ i ].z;
 		ssVerts[ i ].w = 1.f;
 	}
 
@@ -158,20 +159,6 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	minY = helper::Clamp( 0, buffer->Height(), minY );
 	maxX = helper::Clamp( 0, buffer->Width(), maxX );
 	maxY = helper::Clamp( 0, buffer->Height(), maxY );
-
-	// calculate barycentric constants
-	const Float dx01 = ssVerts[ 0 ].x - ssVerts[ 1 ].x;
-	const Float dx12 = ssVerts[ 1 ].x - ssVerts[ 2 ].x;
-	const Float dx20 = ssVerts[ 2 ].x - ssVerts[ 0 ].x;
-	const Float dx21 = ssVerts[ 2 ].x - ssVerts[ 1 ].x;
-
-	const Float dy01 = ssVerts[ 0 ].y - ssVerts[ 1 ].y;
-	const Float dy12 = ssVerts[ 1 ].y - ssVerts[ 2 ].y;
-	const Float dy20 = ssVerts[ 2 ].y - ssVerts[ 0 ].y;
-
-	const Float detTInv = 1.0f / ( dx12 * dy20 - dx20 * dy12 );
-
-	Float bcc[ 3 ]; // barycentric coordinates
 
 	// calculate normal
 	const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
@@ -206,19 +193,26 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					+ w1 * m_vertexColors[ 1 ]
 					+ w2 * m_vertexColors[ 2 ];
 
-				depth =
-					w0 * ssVerts[ 0 ].z
-					+ w1 * ssVerts[ 1 ].z
-					+ w2 * ssVerts[ 2 ].z;
+				const Float oneOverZ =
+					ssVerts[ 0 ].z * w0 +
+					ssVerts[ 1 ].z * w1 +
+					ssVerts[ 2 ].z * w2;
 
-				if ( depth > 0.1f )
+				depth = 1.f / oneOverZ;
+
+				if ( depth > 0.1f && depth < 1000.f )
 				{
 					if ( depth < buffer->GetDepth( x, y ) )
 					{
-						float4 pixelPos =
-							m_verts[ 0 ] * bcc[ 0 ]
-							+ m_verts[ 1 ] * bcc[ 1 ]
-							+ m_verts[ 2 ] * bcc[ 2 ];
+						//float4 pixelPos =
+						//	m_verts[ 0 ] * bcc[ 0 ]
+						//	+ m_verts[ 1 ] * bcc[ 1 ]
+						//	+ m_verts[ 2 ] * bcc[ 2 ];
+
+						const float4 pixelPos =
+							m_verts[ 0 ] * w0
+							+ m_verts[ 1 ] * w1
+							+ m_verts[ 2 ] * w2;
 
 						color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
