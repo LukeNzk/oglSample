@@ -137,25 +137,12 @@ void TestMath()
 	mul = float4x4::Mul( mat0, mul );
 }
 
-
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
 	//TestMath();
-	float4x4 proj;
-	proj.SetProjection( 65.f, buffer->GetAspectRatio(), 0.1f, 1000.f );
-
-	float4x4 view;
-	view.LookAt( { 0.f, 0.f, -9.f }, { 0.f, 0.f, 1.f }, { 0.f, 1.f, 0.f } );
-
-	//shader->SetViewProjectionMatrix( view, proj );
-
-	float4x4 model = float4x4::Identity();
-	model.SetTranslation( { 0, 0.5f, -8 } );
-
-	float4x4 mvp = proj * view * model;
-
+	
 	float4 ssVerts[ 3 ];
-	helper::ConvertToScreenSpace( buffer, mvp, m_verts, ssVerts );
+	helper::ConvertToScreenSpace( buffer, shader->GetMVP(), m_verts, ssVerts );
 
 	// calculate bounds
 	const Float xMin = helper::Min3f( ssVerts[ 0 ].x, ssVerts[ 1 ].x, ssVerts[ 2 ].x );

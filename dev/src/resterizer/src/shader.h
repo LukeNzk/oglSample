@@ -16,6 +16,14 @@ public:
 	void SetModelMatrix( const float4x4& model );
 
 	void VertexShader( const float4& vert, float4& dst );
+
+	const float4x4& GetMVP()
+	{
+		if (m_mvpDirty)
+			UpdateMVP();
+		return m_mvp;
+	}
+
 	void UpdateMVP();
 
 	void SetNormal( const float4& normal ) { m_normal = normal; }

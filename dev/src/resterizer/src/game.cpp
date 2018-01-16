@@ -51,6 +51,15 @@ void Game::LoadResources()
 void Game::Tick( Float dt )
 {
 	m_renderTarget->Clear( 0xff333333 );
+
+	float4x4 proj;
+	proj.SetProjection( 65.f, m_renderTarget->GetAspectRatio(), 0.1f, 1000.f );
+
+	float4x4 view;
+	view.LookAt( { 0.f, 0.f, -9.f }, { 0.f, 0.f, 1.f }, { 0.f, 1.f, 0.f } );
+
+	shader.SetViewProjectionMatrix( view, proj );
+
 	testModel->Draw( m_renderTarget, &shader );
 
 	GEngine->SetOverlayData( m_renderTarget->Width(), m_renderTarget->Height(),
