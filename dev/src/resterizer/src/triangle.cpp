@@ -9,49 +9,12 @@
 
 namespace helper
 {
-	float4 ImageToScreenPos( int x, int y, ImageBuffer* buffer )
+	float EdgeFunction( const float4& a, const float4& b, const float4& c )
 	{
-		float4 result;
-		result.x = ( float )x * buffer->GetAspectRatio() / buffer->Width();
-		result.y = ( float )y / buffer->Height();
-		return result;
-	}
-
-	float EdgeFunction( const float4& a, const float4& b, const float4& p )
-	{
-		float result = ( p.x - a.x ) * ( b.y - a.y )
-			- ( p.y - a.y ) * ( b.x - a.x );
+		float result = ( c.x - a.x ) * ( b.y - a.y )
+			- ( c.y - a.y ) * ( b.x - a.x );
 
 		return result;
-	}
-
-	Bool Intersects( const float4* const tri, const float4& point )
-	{
-		if ( helper::EdgeFunction( tri[ 0 ], tri[ 1 ], point ) > 0.0f )
-			return false;
-
-		if ( helper::EdgeFunction( tri[ 1 ], tri[ 2 ], point ) > 0.0f )
-			return false;
-
-		if ( helper::EdgeFunction( tri[ 2 ], tri[ 0 ], point ) > 0.0f )
-			return false;
-
-		return true;
-	}
-
-	Float GetMinOfCoord( Uint32 coordIndex, const float4* const vectors, Uint32 n )
-	{
-		float minValue = std::numeric_limits< float >::max();
-		for ( Uint32 i = 0; i < n; ++i )
-		{
-			float curr = vectors[ i ][ coordIndex ];
-			if ( curr < minValue )
-			{
-				curr = minValue;
-			}
-		}
-
-		return minValue;
 	}
 
 	Int32 Clamp( Int32 min, Int32 max, Int32 val )
@@ -76,21 +39,63 @@ namespace helper
 		return std::fmaxf( a, std::fmaxf( b, c ) );
 	}
 
-	inline void ConvertToScreenSpace( const ImageBuffer* buffer, 
-									  const float4x4& mvp, 
-									  const float4 wsPos[ 3 ], 
+	inline void ConvertToScreenSpace( const ImageBuffer* buffer,
+									  const float4x4& mvp,
+									  const float4 wsPos[ 3 ],
 									  float4 ssPos[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
-			//shader->VertexShader( m_verts[ i ], ssVerts[ i ] );
-			ssPos[ i ] = float4x4::Mul( mvp, wsPos[ i ] );
-			ssPos[ i ].x *= buffer->Width();
-			ssPos[ i ].y *= buffer->Height();
-			ssPos[ i ].z = 1.f / ssPos[ i ].z;
-			//ssVerts[ i ].w = 1.f;
+			ssPos[ i ] = wsPos[ i ];
+			ssPos[ i ].w = 1;
+
+			ssPos[ i ] = float4x4::Mul( mvp, ssPos[ i ] );
+			const Float z = ssPos[ i ].z;
+			ssPos[ i ] *= 1.f / ssPos[ i ].w;
+
+			ssPos[ i ].x = ( ssPos[ i ].x + 1.f ) * .5f * buffer->Width();
+			ssPos[ i ].y = ( ssPos[ i ].y + 1.f ) * .5f * buffer->Height();
+			ssPos[ i ].z = 1.f / z;
+			ssPos[ i ].w = 1.0f;
 		}
 	}
+
+	//inline void ConvertToScreenSpaceGLM( const ImageBuffer* buffer,
+	//								  const float4x4& mvp,
+	//								  const float4 wsPos[ 3 ],
+	//								  float4 ssPos[ 3 ] )
+	//{
+	//	const glm::mat4 proj = glm::perspective( 1.0f,
+	//											 buffer->GetAspectRatio(),
+	//											 0.1f, 1000.f );
+
+	//	const glm::mat4 view = glm::lookAtLH(
+	//		glm::vec3( -0.0f, -0.0f, -9.f ),
+	//		glm::vec3( 0.f, 0.f, 1.f ),
+	//		glm::vec3( 0.f, 1.f, 0.f ) );
+
+	//	glm::mat4 model = glm::mat4( 1 );
+	//	model = glm::translate( glm::mat4( 1 ), glm::vec3( 0.0f, 0.0f, -10 ) );
+
+	//	glm::mat4 mvp2 = model * view * proj;
+
+	//	for ( int i = 0; i < 3; ++i )
+	//	{
+	//		ssPos[ i ] = wsPos[ i ];
+	//		ssPos[ i ].w = 1;
+	//		glm::vec4* ssPosGLM = ( glm::vec4* )( ssPos );
+
+	//		ssPosGLM[ i ] = model * ssPosGLM[ i ];
+	//		ssPosGLM[ i ] = view * ssPosGLM[ i ];
+	//		ssPosGLM[ i ] = proj * ssPosGLM[ i ];
+	//		ssPosGLM[ i ] *= 1.f / ssPosGLM[ i ].w;
+
+	//		ssPos[ i ].x = ( ssPos[ i ].x + 1.f ) * .5f * buffer->Width();
+	//		ssPos[ i ].y = ( ssPos[ i ].y + 1.f ) * .5f * buffer->Height();
+	//		ssPos[ i ].z = 1.f / ssPos[ i ].z;
+	//		ssPos[ i ].w = 1.0f;
+	//	}
+	//}
 }
 
 CTriangle::CTriangle()
@@ -140,12 +145,13 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	proj.SetProjection( 65.f, buffer->GetAspectRatio(), 0.1f, 1000.f );
 
 	float4x4 view;
-	view.LookAt( float4( 0, 0, 10.3f ), float4( 0, 0, -1, 0 ), float4( 0, 1, 0, 0 ) );
+	view.LookAt( { 0.f, 0.f, -9.f }, { 0.f, 0.f, 1.f }, { 0.f, 1.f, 0.f } );
 
-	shader->SetViewProjectionMatrix( view, proj );
+	//shader->SetViewProjectionMatrix( view, proj );
 
 	float4x4 model = float4x4::Identity();
-	model.SetTranslation( { 0.2f, 0.2f, 10.f }  );
+	model.SetTranslation( { 0, 0.5f, -8 } );
+
 	float4x4 mvp = proj * view * model;
 
 	float4 ssVerts[ 3 ];
@@ -171,7 +177,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	// rasterization loop
 	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
-	for ( Uint32 y = minY; y < maxY; ++y )
+	for ( Uint32 y = minY; y < maxY ; ++y )
 	{
 		for ( Uint32 x = minX; x < maxX; ++x )
 		{

@@ -192,6 +192,11 @@ struct float4
 
 	inline float Dot(const float4& b) const
 	{
+		return x * b.x + y * b.y + z * b.z;
+	}
+
+	inline float Dot4( const float4& b ) const
+	{
 		return x * b.x + y * b.y + z * b.z + w * b.w;
 	}
 

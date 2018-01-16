@@ -23,21 +23,6 @@ public:
 		r[ 3 ] = rows[ 3 ];
 	}
 
-	void Dot( const float4x4& other, float4x4& dst ) const
-	{
-		dst = Zero();
-		for ( int i = 0; i < 4; ++i )
-		{
-			for ( int j = 0; j < 4; ++j )
-			{
-				for ( int k = 0; k < 4; ++k )
-				{
-					dst[ i ][ j ] += r[ i ][ k ] * other[ k ][ j ];
-				}
-			}
-		}
-	}
-
 	static float4x4 Mul( const float4x4& a, const float4x4& b )
 	{
 		float4x4 res = Zero();
@@ -111,26 +96,26 @@ public:
 
 	void SetProjection( Float fov, Float ar, Float near, Float far )
 	{
-		static const Float PIf = 3.14159265358979f / 180.f;
+		//static const Float PIf = 3.14159265358979f / 180.f;
 
-		const Float far_nearInv = 1.f / ( far - near );
-		const Float s = 1.f / std::tanf( 0.5f * fov * PIf );
+		//const Float far_nearInv = 1.f / ( far - near );
+		//const Float s = 1.f / std::tanf( 0.5f * fov * PIf );
 
-		r[ 0 ] = float4( s / ar, 0.f, 0.f, 0.f );
-		r[ 1 ] = float4( 0.f, s, 0.f, 0.f );
-		r[ 2 ] = float4( 0.f, 0.f, - far * far_nearInv, -near * far * far_nearInv );
-		r[ 3 ] = float4( 0.f, 0.f, 1.f, 0.f );
+		//r[ 0 ] = float4( s / ar, 0.f, 0.f, 0.f );
+		//r[ 1 ] = float4( 0.f, s, 0.f, 0.f );
+		//r[ 2 ] = float4( 0.f, 0.f, -far * far_nearInv, 2.f * near * far * far_nearInv );
+		//r[ 3 ] = float4( 0.f, 0.f, -1.f, 0.f );
 
-		//const Float PIf = 3.14159265358979f / 360.0f;
-		//fovy *= PIf;
+		const Float PIf = 3.14159265358979f / 360.0f;
+		fov *= PIf;
 
-		//const Float near_FarInv = 1.f / ( near - far );
-		//const Float f = std::cosf( fovy ) / std::sinf( fovy );
+		const Float near_FarInv = 1.f / ( near - far );
+		const Float f = std::cosf( fov ) / std::sinf( fov );
 
-		//r[ 0 ] = float4( f / ar,	0.f,	0.f,							0.f );
-		//r[ 1 ] = float4( 0.f,		-f,		0.f,							0.f );
-		//r[ 2 ] = float4( 0.f,		0.f,	( near + far ) * near_FarInv,	2.f * near * far * near_FarInv );
-		//r[ 3 ] = float4( 0.f,		0.f,	-1.f,							0.f );
+		r[ 0 ] = float4( f / ar, 0.f, 0.f, 0.f );
+		r[ 1 ] = float4( 0.f, f, 0.f, 0.f );
+		r[ 2 ] = float4( 0.f, 0.f, ( near + far ) * near_FarInv, 2.f * near * far * near_FarInv );
+		r[ 3 ] = float4( 0.f, 0.f, -1.f, 0.f );
 	}
 
 	void LookAt( float4 eye, float4 target, float4 up )
@@ -145,9 +130,9 @@ public:
 		float4 u = float4::Cross( f , rt ); // up
 		u.Normalize();
 
-		r[ 0 ] = float4( rt.x, rt.y, rt.z, -eye.x );
-		r[ 1 ] = float4( u.x, u.y, u.z, -eye.y );
-		r[ 2 ] = float4( -f.x, -f.y, -f.z, -eye.z );
+		r[ 0 ] = float4( rt.x, rt.y, rt.z, eye.x );
+		r[ 1 ] = float4( u.x, u.y, u.z, eye.y );
+		r[ 2 ] = float4( f.x, f.y, f.z, eye.z );
 		r[ 3 ] = float4( 0.f, 0.f, 0.f, 1.f );
 
 		//r[ 0 ] = float4( rt[ 0 ], u[ 0 ], -f[ 0 ], 0.f );
