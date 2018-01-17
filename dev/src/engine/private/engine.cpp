@@ -75,4 +75,5 @@ void Engine::SetOverlayData( Uint32 width, Uint32 height, const void* data ) con
 	SC_ASSERT( m_overlaySprite, "No overlay was initialized." );
 	graphics::BindTexture2D( m_overlaySprite->GetTexture() );
 	graphics::UploadOverlayTexture( m_overlaySprite->GetTexture(), width, height, data );
+	m_overlaySprite->m_scale = { ( Float )width / height, 1.0f };
 }

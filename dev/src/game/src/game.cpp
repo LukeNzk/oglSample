@@ -36,7 +36,7 @@ void Game::LoadResources()
 
 	spr = GEngine->CreateSprite();
 	spr->SetTexture( textures.FindTexture( "ship.png" ) );
-	spr->m_scale = 0.1f;
+	spr->m_scale = { 0.1f, 0.1f };
 
 	m_asteroids = new AsteroidsManager;
 	m_asteroids->LoadResources( &textures );

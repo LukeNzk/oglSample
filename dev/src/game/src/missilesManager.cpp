@@ -49,7 +49,7 @@ void MissilesManager::LoadResources( TextureManager* textures )
 		Sprite* sprite = GEngine->CreateSprite();
 		sprite->SetTexture( texture );
 		sprite->m_position = missile->m_position;
-		sprite->m_scale = 0.03f;
+		sprite->m_scale = { 0.03f, 0.03f };
 
 		m_missiles.push_back( missile );
 		m_spritesPool.push_back( sprite );

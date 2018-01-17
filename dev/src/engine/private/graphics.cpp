@@ -439,7 +439,7 @@ namespace graphics
 	void SetUniform2f( Uint32 location, const Float * value )
 	{
 		glUniform2fv( location, 1, value );
-		SC_ASSERT( glGetError() == 0, "Failed to set float3 unifrom." );
+		SC_ASSERT( glGetError() == 0, "Failed to set float2 unifrom." );
 	}
 
 	void SetUniform3f( Uint32 location, const Float* value )

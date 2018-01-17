@@ -70,9 +70,9 @@ public:
 		graphics::SetUniform1f( m_rotation, rot );
 	}
 
-	void SetScale( Float scale ) const
+	void SetScale( Vector2 scale ) const
 	{
-		graphics::SetUniform1f( m_scale, scale );
+		graphics::SetUniform2f( m_scale, &scale.x );
 	}
 
 	void SetPosition( const Vector2& pos ) const

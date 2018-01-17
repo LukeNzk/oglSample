@@ -20,7 +20,7 @@ extern Engine* GEngine;
 Shader shader;
 
 Game::Game()
-	: m_renderTarget( new TgaBuffer( 600, 600 ) )
+	: m_renderTarget( new TgaBuffer( 800, 600 ) )
 {
 	Model* model = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
 	m_models.push_back( model );
@@ -65,7 +65,7 @@ void Game::Tick( Float dt )
 
 	++frame;
 
-	if ( frame % 100 )
+	if ( frame % 1000 )
 	{
 		const Double fps = ( Double )frame / timer.TimeElapsed();
 		std::printf( "FPS: %f\n", fps );
