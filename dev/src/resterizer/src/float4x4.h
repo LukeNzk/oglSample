@@ -96,16 +96,6 @@ public:
 
 	void SetProjection( Float fov, Float ar, Float near, Float far )
 	{
-		//static const Float PIf = 3.14159265358979f / 180.f;
-
-		//const Float far_nearInv = 1.f / ( far - near );
-		//const Float s = 1.f / std::tanf( 0.5f * fov * PIf );
-
-		//r[ 0 ] = float4( s / ar, 0.f, 0.f, 0.f );
-		//r[ 1 ] = float4( 0.f, s, 0.f, 0.f );
-		//r[ 2 ] = float4( 0.f, 0.f, -far * far_nearInv, 2.f * near * far * far_nearInv );
-		//r[ 3 ] = float4( 0.f, 0.f, -1.f, 0.f );
-
 		const Float PIf = 3.14159265358979f / 360.0f;
 		fov *= PIf;
 
@@ -134,11 +124,6 @@ public:
 		r[ 1 ] = float4( u.x, u.y, u.z, eye.y );
 		r[ 2 ] = float4( f.x, f.y, f.z, eye.z );
 		r[ 3 ] = float4( 0.f, 0.f, 0.f, 1.f );
-
-		//r[ 0 ] = float4( rt[ 0 ], u[ 0 ], -f[ 0 ], 0.f );
-		//r[ 1 ] = float4( rt[ 1 ], u[ 1 ], -f[ 1 ], 0.f );
-		//r[ 2 ] = float4( rt[ 2 ], u[ 2 ], -f[ 2 ], 0.f );
-		//r[ 3 ] = float4( -eye[ 0 ], -eye[ 1 ], -eye[ 2 ], 1.f );
 	}
 
 	void SetTranslation( float4 vec )

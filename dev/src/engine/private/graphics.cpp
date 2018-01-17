@@ -141,7 +141,7 @@ namespace graphics
 		glEnable( GL_BLEND ); 
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-		const Bool vsync = true;
+		const Bool vsync = false;
 		if ( vsync )
 			noErr = wglSwapIntervalEXT( 1 );
 		else

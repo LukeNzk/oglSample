@@ -17,9 +17,11 @@ namespace helper
 }
 
 
-Timer::Timer()
+Timer::Timer( bool jumpStart )
 	: m_start( 0.0 )
 {
+	if ( jumpStart )
+		Start();
 }
 
 void Timer::Start()

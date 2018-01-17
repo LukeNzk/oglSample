@@ -4,7 +4,7 @@
 class Timer
 {
 public:
-	Timer();
+	Timer( bool jumpStart = false );
 
 	void Start();
 

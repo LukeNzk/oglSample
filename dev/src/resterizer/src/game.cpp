@@ -7,6 +7,7 @@
 
 #include "../../utils/public/vector2.h"
 #include "../../utils/public/debug.h"
+#include "../../utils/public/timer.h"
 
 #include "imageBuffer.h"
 #include "tgaBuffer.h"
@@ -16,30 +17,23 @@
 
 extern Engine* GEngine;
 
-CTriangle testTriangle;
-Model* testModel;
-
 Shader shader;
 
 Game::Game()
 	: m_renderTarget( new TgaBuffer( 600, 600 ) )
 {
-	testModel = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
-
-	testTriangle.SetVertexPos( 0, float4( 0, 0, 0.0 ) );
-	testTriangle.SetVertexColor( 0, Color( 0xff, 0, 0 ) );
-
-	testTriangle.SetVertexPos( 1, float4( 1.f, 0.f, 0.f ) );
-	testTriangle.SetVertexColor( 1, Color( 0, 0xff, 0 ) );
-
-	testTriangle.SetVertexPos( 2, float4( 0, 1.0f, 0.f ) );
-	testTriangle.SetVertexColor( 2, Color( 0, 0, 0xff ) );
+	Model* model = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
+	m_models.push_back( model );
 }
 
 Game::~Game()
 {
 	delete m_renderTarget;
-	delete testModel;
+
+	for ( auto model : m_models )
+		delete model;
+
+	m_models.clear();
 }
 
 void Game::LoadResources()
@@ -50,6 +44,9 @@ void Game::LoadResources()
 
 void Game::Tick( Float dt )
 {
+	static Timer timer( true );
+	static Uint32 frame = 0;
+
 	m_renderTarget->Clear( 0xff333333 );
 
 	float4x4 proj;
@@ -60,10 +57,21 @@ void Game::Tick( Float dt )
 
 	shader.SetViewProjectionMatrix( view, proj );
 
-	testModel->Draw( m_renderTarget, &shader );
+	for ( auto model : m_models )
+		model->Draw( m_renderTarget, &shader );
 
 	GEngine->SetOverlayData( m_renderTarget->Width(), m_renderTarget->Height(),
 							 m_renderTarget->GetColorData() );
+
+	++frame;
+
+	if ( frame % 100 )
+	{
+		const Double fps = ( Double )frame / timer.TimeElapsed();
+		std::printf( "FPS: %f\n", fps );
+		frame = 0;
+		timer.Start();
+	}
 }
 
 void Game::DispatchEvent( ERIEventType type, void* data )

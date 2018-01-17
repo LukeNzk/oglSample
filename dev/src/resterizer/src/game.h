@@ -3,7 +3,10 @@
 #include "../../engine/public/input.h"
 #include "../../engine/public/game.h"
 
+#include <vector>
+
 class ImageBuffer;
+class Model;
 
 class Game final : public IGame, public IInputManager
 {
@@ -16,5 +19,6 @@ public:
 	void DispatchEvent( ERIEventType type, void* data ) override;
 
 private:
-	ImageBuffer* m_renderTarget;
+	ImageBuffer*			m_renderTarget;
+	std::vector< Model* >	m_models;
 };
