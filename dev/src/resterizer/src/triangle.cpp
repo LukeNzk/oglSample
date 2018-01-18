@@ -39,63 +39,34 @@ namespace helper
 		return std::fmaxf( a, std::fmaxf( b, c ) );
 	}
 
+	inline float4 ConvertToScreenSpace( const ImageBuffer* buffer,
+										const float4x4& mvp,
+										const float4 wsPos )
+	{
+		float4 result;
+		result = wsPos;
+		result.w = 1;
+
+		result = float4x4::Mul( mvp, result );
+		result *= 1.f / result.w;
+
+		result.x = ( result.x + 1.f ) * .5f * buffer->Width();
+		result.y = ( result.y + 1.f ) * .5f * buffer->Height();
+		result.z = 1.f / result.z;
+		result.w = 1.0f;
+
+		return result;
+	}
+
 	inline void ConvertToScreenSpace( const ImageBuffer* buffer,
 									  const float4x4& mvp,
 									  const float4 wsPos[ 3 ],
 									  float4 ssPos[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
-		{
-			ssPos[ i ] = wsPos[ i ];
-			ssPos[ i ].w = 1;
-
-			ssPos[ i ] = float4x4::Mul( mvp, ssPos[ i ] );
-			const Float z = ssPos[ i ].z;
-			ssPos[ i ] *= 1.f / ssPos[ i ].w;
-
-			ssPos[ i ].x = ( ssPos[ i ].x + 1.f ) * .5f * buffer->Width();
-			ssPos[ i ].y = ( ssPos[ i ].y + 1.f ) * .5f * buffer->Height();
-			ssPos[ i ].z = 1.f / z;
-			ssPos[ i ].w = 1.0f;
-		}
+		ssPos[ 0 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 0 ] );
+		ssPos[ 1 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 1 ] );
+		ssPos[ 2 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 2 ] );
 	}
-
-	//inline void ConvertToScreenSpaceGLM( const ImageBuffer* buffer,
-	//								  const float4x4& mvp,
-	//								  const float4 wsPos[ 3 ],
-	//								  float4 ssPos[ 3 ] )
-	//{
-	//	const glm::mat4 proj = glm::perspective( 1.0f,
-	//											 buffer->GetAspectRatio(),
-	//											 0.1f, 1000.f );
-
-	//	const glm::mat4 view = glm::lookAtLH(
-	//		glm::vec3( -0.0f, -0.0f, -9.f ),
-	//		glm::vec3( 0.f, 0.f, 1.f ),
-	//		glm::vec3( 0.f, 1.f, 0.f ) );
-
-	//	glm::mat4 model = glm::mat4( 1 );
-	//	model = glm::translate( glm::mat4( 1 ), glm::vec3( 0.0f, 0.0f, -10 ) );
-
-	//	glm::mat4 mvp2 = model * view * proj;
-
-	//	for ( int i = 0; i < 3; ++i )
-	//	{
-	//		ssPos[ i ] = wsPos[ i ];
-	//		ssPos[ i ].w = 1;
-	//		glm::vec4* ssPosGLM = ( glm::vec4* )( ssPos );
-
-	//		ssPosGLM[ i ] = model * ssPosGLM[ i ];
-	//		ssPosGLM[ i ] = view * ssPosGLM[ i ];
-	//		ssPosGLM[ i ] = proj * ssPosGLM[ i ];
-	//		ssPosGLM[ i ] *= 1.f / ssPosGLM[ i ].w;
-
-	//		ssPos[ i ].x = ( ssPos[ i ].x + 1.f ) * .5f * buffer->Width();
-	//		ssPos[ i ].y = ( ssPos[ i ].y + 1.f ) * .5f * buffer->Height();
-	//		ssPos[ i ].z = 1.f / ssPos[ i ].z;
-	//		ssPos[ i ].w = 1.0f;
-	//	}
-	//}
 }
 
 CTriangle::CTriangle()
@@ -140,7 +111,7 @@ void TestMath()
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
 	//TestMath();
-	
+
 	float4 ssVerts[ 3 ];
 	helper::ConvertToScreenSpace( buffer, shader->GetMVP(), m_verts, ssVerts );
 
@@ -158,13 +129,13 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
 
 	// calculate normal
-	//const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
-	//shader->SetNormal( normal );
+	const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
+	shader->SetNormal( normal );
 
 	// rasterization loop
 	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
-	for ( Uint32 y = minY; y < maxY ; ++y )
+	for ( Uint32 y = minY; y < maxY; ++y )
 	{
 		for ( Uint32 x = minX; x < maxX; ++x )
 		{
@@ -205,7 +176,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 							+ m_verts[ 1 ] * w1
 							+ m_verts[ 2 ] * w2;
 
-						//color = shader->PixelShader( color, pixelPos );
+						color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
 						buffer->WriteDepth( x, y, depth );
 					}

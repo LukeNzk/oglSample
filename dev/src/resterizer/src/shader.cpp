@@ -29,18 +29,6 @@ Color Shader::PixelShader( Color col, const float4& pos ) const
 	const float4 lightPos( 1, 1, 1 );
 
 	return col;
-	const float4 lToP = pos - lightPos;
-	const float magSqr = lToP.SqrMagnitude();
-
-	float light = 2.f - magSqr;
-	if ( light < 0.0f )
-		light = 0.0f;
-	if ( light > 1.0f )
-		light = 1.0f;
-
-	col.Set( ( Uint8 )( col.r * light ), ( Uint8 )( col.g * light ), ( Uint8 )( col.b * light ), col.a );
-
-	return col;
 }
 
 void Shader::VertexShader( const float4& vert, float4& dst )
