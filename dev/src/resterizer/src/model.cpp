@@ -35,15 +35,15 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 
 	static const Color colors[ 8 ] =
 	{
-		0xffff0000,
-		0xff00ff00,
-		0xff0000ff,
-		0xffff00ff,
+		Color( 0xffff0000 ),
+		Color( 0xff00ff00 ),
+		Color( 0xff0000ff ),
+		Color( 0xffff00ff ),
 
-		0xffffff00,
-		0xff00ffff,
-		0xffffffff,
-		0xff000000
+		Color( 0xffffff00 ),
+		Color( 0xff00ffff ),
+		Color( 0xffffffff ),
+		Color( 0xff000000 )
 	};
 
 	static const Uint8 indices[ 36 ] =
@@ -99,6 +99,7 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 		triangle->SetVertexColor( 0, colors[ indices[ i * 3 ] ] );
 		triangle->SetVertexColor( 1, colors[ indices[ i * 3 + 1 ] ] );
 		triangle->SetVertexColor( 2, colors[ indices[ i * 3 + 2 ] ] );
+		triangle->ComputeNormal();
 
 		result->m_triangles.push_back( triangle );
 	}

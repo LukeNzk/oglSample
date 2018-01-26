@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-#define CLAMPF_01( x ) ( x > 1.0f ) ? 1.0f : ( x < 0.0f ) ? 0.0f : x;
+#define CLAMPF_01( x ) ( ( x > 1.0f ) ? 1.0f : ( x < 0.0f ) ? 0.0f : x )
 
 struct float4
 {
@@ -217,7 +217,10 @@ struct float4
 			return float4(); // ZERO-vector
 
 		const float invMag = 1.0f / mag;
-		float4 result = (*this) * invMag;
+		float4 result = (*this);
+		result.x *= invMag;
+		result.y *= invMag;
+		result.z *= invMag;
 		return result;
 	}
 
@@ -231,7 +234,6 @@ struct float4
 		x *= invMag;
 		y *= invMag;
 		z *= invMag;
-		w *= invMag;
 	}
 
 	inline void Lerp(const float4& to, float t)

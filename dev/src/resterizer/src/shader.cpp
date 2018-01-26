@@ -21,14 +21,21 @@ void Shader::SetModelMatrix( const float4x4& model )
 void Shader::UpdateMVP()
 {
 	m_mvp = m_projection * m_view * m_model;
+	m_mv = m_view * m_model;
 	m_mvpDirty = false;
+
+	m_light.m_pos = { -2.f, 0.f, 10.f, 1.f };
+	m_light.m_vsPos = float4x4::Mul( m_view, m_light.m_pos );
 }
 
 Color Shader::PixelShader( Color col, const float4& pos ) const
 {
-	const float4 lightPos( 1, 1, 1 );
+	Color white( 100, 100, 100, 255 );
 
-	return col;
+	float4 L = ( m_light.m_vsPos - pos ).Normalized();
+	Float NdotL = CLAMPF_01( m_normal.Dot( L ) );
+
+	return col * NdotL;
 }
 
 void Shader::VertexShader( const float4& vert, float4& dst )

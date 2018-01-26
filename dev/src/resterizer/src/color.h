@@ -1,5 +1,6 @@
 #pragma once
 #include "../../utils/public/types.h"
+#include "float4.h"
 
 class Color
 {
@@ -9,7 +10,7 @@ public:
 		Set( 0, 0, 0 );
 	}
 
-	Color( Uint32 col )
+	explicit Color( Uint32 col )
 	{
 		m_rgba8 = col;
 	}
@@ -30,6 +31,42 @@ public:
 	inline Uint32 GetARGB8() const 
 	{ 
 		return m_rgba8;
+	}
+
+	Color operator*( Float value )
+	{
+		Color result;
+		result.r = ( Uint8 )( CLAMPF( value * r, 0.f, 255.f ) );
+		result.g = ( Uint8 )( CLAMPF( value * g, 0.f, 255.f ) );
+		result.b = ( Uint8 )( CLAMPF( value * b, 0.f, 255.f ) );
+		return result;
+	}
+
+	Color operator*( const float4& vec )
+	{
+		Color result;
+		result.r = ( Uint8 )( CLAMPF( vec.x * r, 0.f, 255.f ) );
+		result.g = ( Uint8 )( CLAMPF( vec.y * g, 0.f, 255.f ) );
+		result.b = ( Uint8 )( CLAMPF( vec.z * b, 0.f, 255.f ) );
+		return result;
+	}
+
+	Color operator+( const float4& vec )
+	{
+		Color result;
+		result.r = ( Uint8 )( CLAMPF( vec.x + r, 0.f, 255.f ) );
+		result.g = ( Uint8 )( CLAMPF( vec.y + g, 0.f, 255.f ) );
+		result.b = ( Uint8 )( CLAMPF( vec.z + b, 0.f, 255.f ) );
+		return result;
+	}
+
+	Color operator+( Float val )
+	{
+		Color result;
+		result.r = ( Uint8 )( CLAMPF( val + r, 0.f, 255.f ) );
+		result.g = ( Uint8 )( CLAMPF( val + g, 0.f, 255.f ) );
+		result.b = ( Uint8 )( CLAMPF( val + b, 0.f, 255.f ) );
+		return result;
 	}
 
 	static Color Red() { return Color( 255, 0, 0 ); }

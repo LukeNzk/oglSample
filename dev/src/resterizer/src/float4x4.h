@@ -40,7 +40,7 @@ public:
 		return res;
 	}
 
-	float4x4 operator*( const float4x4& other )
+	float4x4 operator*( const float4x4& other ) const
 	{
 		return float4x4::Mul( *this, other );
 	}

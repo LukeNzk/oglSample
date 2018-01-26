@@ -18,3 +18,5 @@ typedef float Float;
 typedef double Double;
 
 typedef bool Bool;
+
+#define CLAMPF( val, min, max ) ( ( val > max ) ? max : ( val < min ) ? min : val )

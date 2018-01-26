@@ -60,12 +60,18 @@ namespace helper
 
 	inline void ConvertToScreenSpace( const ImageBuffer* buffer,
 									  const float4x4& mvp,
-									  const float4 wsPos[ 3 ],
-									  float4 ssPos[ 3 ] )
+									  const float4x4& model,
+									  const float4 msPos[ 3 ],
+									  float4 ssPos[ 3 ],
+									  float4 wsPos[ 3 ] )
 	{
-		ssPos[ 0 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 0 ] );
-		ssPos[ 1 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 1 ] );
-		ssPos[ 2 ] = ConvertToScreenSpace( buffer, mvp, wsPos[ 2 ] );
+		ssPos[ 0 ] = ConvertToScreenSpace( buffer, mvp, msPos[ 0 ] );
+		ssPos[ 1 ] = ConvertToScreenSpace( buffer, mvp, msPos[ 1 ] );
+		ssPos[ 2 ] = ConvertToScreenSpace( buffer, mvp, msPos[ 2 ] );
+
+		wsPos[ 0 ] = float4x4::Mul( model, msPos[ 0 ] );
+		wsPos[ 1 ] = float4x4::Mul( model, msPos[ 1 ] );
+		wsPos[ 2 ] = float4x4::Mul( model, msPos[ 2 ] );
 	}
 }
 
@@ -92,6 +98,18 @@ void CTriangle::SetVertexColor( Uint32 index, Color col )
 	m_vertexColors[ index ] = col;
 }
 
+void CTriangle::ComputeNormal()
+{
+	const float4 u = m_verts[ 1 ] - m_verts[ 0 ];
+	const float4 v = m_verts[ 2 ] - m_verts[ 1 ];
+
+	m_normal.x = u.y * v.z - u.z * v.y;
+	m_normal.y = u.z * v.x - u.x * v.z;
+	m_normal.z = u.x * v.y - u.y * v.x;
+	m_normal.Normalize();
+	m_normal.w = 0.f;
+}
+
 void TestMath()
 {
 	const float4 rows0[ 4 ] = {
@@ -111,9 +129,13 @@ void TestMath()
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
 	//TestMath();
+	//shader->SetNormal( float4x4::Mul( shader->GetModelMatrix(), m_normal ) );
+	shader->SetNormal( float4x4::Mul( shader->GetMV(), m_normal ).Normalized() );
+	//shader->SetNormal( m_normal );
 
 	float4 ssVerts[ 3 ];
-	helper::ConvertToScreenSpace( buffer, shader->GetMVP(), m_verts, ssVerts );
+	float4 worldVerts[ 3 ];
+	helper::ConvertToScreenSpace( buffer, shader->GetMVP(), shader->GetMV(), m_verts, ssVerts, worldVerts );
 
 	// calculate bounds
 	const Float xMin = helper::Min3f( ssVerts[ 0 ].x, ssVerts[ 1 ].x, ssVerts[ 2 ].x );
@@ -127,10 +149,6 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	const Uint32 minY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMin ) );
 	const Uint32 maxX = helper::Clamp( 0, buffer->Width(), ( Int32 )std::floor( xMax ) );
 	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
-
-	// calculate normal
-	const float4 normal = float4::Cross( m_verts[ 0 ], m_verts[ 1 ] ).Normalized();
-	shader->SetNormal( normal );
 
 	// rasterization loop
 	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
@@ -172,9 +190,9 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					if ( depth < buffer->GetDepth( x, y ) )
 					{
 						const float4 pixelPos =
-							m_verts[ 0 ] * w0
-							+ m_verts[ 1 ] * w1
-							+ m_verts[ 2 ] * w2;
+							worldVerts[ 0 ] * w0
+							+ worldVerts[ 1 ] * w1
+							+ worldVerts[ 2 ] * w2;
 
 						color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
