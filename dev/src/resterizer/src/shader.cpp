@@ -32,7 +32,7 @@ Color Shader::PixelShader( Color col, const float4& pos ) const
 {
 	float4 L = m_light.m_vsPos - pos;
 	const Float dist2 = L.SqrMagnitude();
-	L.Normalize();
+	L.Normalize( dist2 );
 
 	const Float NdotL = 80 * CLAMPF_01( m_normal.Dot( L ) ) / dist2;
 	return ( col * NdotL );

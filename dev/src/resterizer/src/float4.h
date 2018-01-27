@@ -38,6 +38,11 @@ struct float4
 		return std::sqrtf( SqrMagnitude() );
 	}
 
+	inline float Magnitude( float sqrMag ) const
+	{
+		return std::sqrtf( sqrMag );
+	}
+
 	inline float Magnitude4() const
 	{
 		return std::sqrtf( SqrMagnitude4() );
@@ -224,10 +229,36 @@ struct float4
 		return result;
 	}
 
+	inline float4 Normalized( float sqrMag ) const
+	{
+		const float mag = Magnitude( sqrMag );
+		if ( mag == 0.f )
+			return float4(); // ZERO-vector
+
+		const float invMag = 1.0f / mag;
+		float4 result = ( *this );
+		result.x *= invMag;
+		result.y *= invMag;
+		result.z *= invMag;
+		return result;
+	}
+
 	inline void Normalize()
 	{
 		const float mag = Magnitude();
 		if (mag == 0.0f)
+			return;
+
+		const float invMag = 1.0f / mag;
+		x *= invMag;
+		y *= invMag;
+		z *= invMag;
+	}
+
+	inline void Normalize( float sqrMag )
+	{
+		const float mag = Magnitude( sqrMag );
+		if ( mag == 0.0f )
 			return;
 
 		const float invMag = 1.0f / mag;

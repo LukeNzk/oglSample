@@ -6,6 +6,7 @@
 #include "../../utils/public/macros.h"
 
 #include <limits>
+#include <xmmintrin.h>
 
 namespace helper
 {
@@ -74,6 +75,134 @@ namespace helper
 		wsPos[ 2 ] = float4x4::Mul( model, msPos[ 2 ] );
 	}
 }
+
+class SIMDProcessor
+{
+public:
+	__declspec( align( 16 ) )
+	struct QFloat
+	{
+		union
+		{
+			__m128 mm;
+			Float f[ 4 ];
+		};
+
+		void Set( Uint32 index, Float val )
+		{
+			f[ index ] = val;
+		}
+	};
+
+	__declspec( align( 16 ) )
+	struct QVec3
+	{
+		union
+		{
+			struct
+			{
+				__m128 x;
+				__m128 y;
+				__m128 z;
+			} mm;
+
+			struct
+			{
+				Float x[ 4 ];
+				Float y[ 4 ];
+				Float z[ 4 ];
+			};
+		};
+
+		void Set( Uint32 index, const Float* val )
+		{
+			x[ index ] = val[ 0 ];
+			y[ index ] = val[ 1 ];
+			z[ index ] = val[ 2 ];
+		}
+	};
+
+	QVec3 m_ssVerts[ 3 ];
+	QVec3 m_wsVerts[ 3 ];
+	QVec3 m_wsPx;
+
+	QVec3 m_pixelPos;
+	QVec3 m_bcc; // barycentric
+	QVec3 m_pixelCol;
+
+	QFloat m_oneOverZ;
+	QFloat m_invArea;
+
+	void EdgeFunction( const QVec3* a, const QVec3* b, const QVec3* c, __m128& result )
+	{
+		//r = ( c.x - a.x ) * ( b.y - a.y ) - ( c.y - a.y ) * ( b.x - a.x );
+
+		__m128 r1 = _mm_sub_ps( c->mm.x, a->mm.x ); //( c.x - a.x )
+		__m128 r2 = _mm_sub_ps( b->mm.y, a->mm.y ); //( b.y - a.y )
+
+		result = _mm_mul_ps( r1, r2 );
+
+		r1 = _mm_sub_ps( c->mm.y, a->mm.y ); //( c.y - a.y )
+		r2 = _mm_sub_ps( b->mm.x, a->mm.x ); //( b.x - a.x )
+
+		result = _mm_sub_ps( result, _mm_mul_ps( r1, r2 ) );
+	}
+
+	void ComputeEdges()
+	{
+		EdgeFunction( &m_ssVerts[ 1 ], &m_ssVerts[ 2 ], &m_pixelPos, m_bcc.mm.x );
+		EdgeFunction( &m_ssVerts[ 2 ], &m_ssVerts[ 0 ], &m_pixelPos, m_bcc.mm.y );
+		EdgeFunction( &m_ssVerts[ 0 ], &m_ssVerts[ 1 ], &m_pixelPos, m_bcc.mm.z );
+	}
+
+	void TestEdges()
+	{
+		static const __m128 zero = { 0 };
+		m_pixelCol.mm.x = _mm_cmpge_ps( m_bcc.mm.x, zero );
+		m_pixelCol.mm.y = _mm_cmpge_ps( m_bcc.mm.y, zero );
+		m_pixelCol.mm.z = _mm_cmpge_ps( m_bcc.mm.z, zero );
+	}
+
+	void BccMulInvArea()
+	{
+		m_bcc.mm.x = _mm_mul_ps( m_bcc.mm.x, m_invArea.mm );
+		m_bcc.mm.y = _mm_mul_ps( m_bcc.mm.y, m_invArea.mm );
+		m_bcc.mm.z = _mm_mul_ps( m_bcc.mm.z, m_invArea.mm );
+	}
+
+	void CalcDepth()
+	{
+		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_ssVerts[ 0 ].mm.z );
+		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_ssVerts[ 1 ].mm.z );
+		r1 = _mm_add_ps( r1, r2 );
+		r2 = _mm_mul_ps( m_bcc.mm.z, m_ssVerts[ 2 ].mm.z );
+		m_oneOverZ.mm = _mm_add_ps( r1, r2 );
+	}
+
+	void CalcPixelPos()
+	{
+		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.x );
+		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.x );
+		m_wsPx.mm.x = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.x );
+
+		m_wsPx.mm.x = _mm_add_ps( m_wsPx.mm.x, r1 );
+		m_wsPx.mm.x = _mm_add_ps( m_wsPx.mm.x, r2 );
+
+		r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.y );
+		r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.y );
+		m_wsPx.mm.y = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.y );
+
+		m_wsPx.mm.y = _mm_add_ps( m_wsPx.mm.y, r1 );
+		m_wsPx.mm.y = _mm_add_ps( m_wsPx.mm.y, r2 );
+
+		r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.z );
+		r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.z );
+		m_wsPx.mm.z = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.z );
+
+		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r1 );
+		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r2 );
+	}
+};
 
 CTriangle::CTriangle()
 {
@@ -150,50 +279,84 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	// rasterization loop
 	const Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 	float4 pixelPos;
+	Color color;
+	SIMDProcessor simd;
 
+	for ( int i = 0; i < 4; ++i )
+	{
+		simd.m_ssVerts[ 0 ].Set( i, &ssVerts[ 0 ].x );
+		simd.m_ssVerts[ 1 ].Set( i, &ssVerts[ 1 ].x );
+		simd.m_ssVerts[ 2 ].Set( i, &ssVerts[ 2 ].x );
+		
+		simd.m_wsVerts[ 0 ].Set( i, &worldVerts[ 0 ].x );
+		simd.m_wsVerts[ 1 ].Set( i, &worldVerts[ 1 ].x );
+		simd.m_wsVerts[ 2 ].Set( i, &worldVerts[ 2 ].x );
+
+		simd.m_invArea.Set( i, invArea );
+	}
+
+	Uint32 pixelCount = 0;
 	for ( Uint32 y = minY; y < maxY; ++y )
 	{
 		for ( Uint32 x = minX; x < maxX; ++x )
 		{
-			float4 pixelPos;
 			pixelPos.x = static_cast< Float > ( x );
 			pixelPos.y = static_cast< Float > ( y );
 
-			// check intersections
-			Float w0 = helper::EdgeFunction( ssVerts[ 1 ], ssVerts[ 2 ], pixelPos );
-			Float w1 = helper::EdgeFunction( ssVerts[ 2 ], ssVerts[ 0 ], pixelPos );
-			Float w2 = helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], pixelPos );
-
-			if ( w0 >= 0 && w1 >= 0 && w2 >= 0 )
+			int simdIndex = ( pixelCount ) % 4;
+			++pixelCount;
+			if ( simdIndex == 0 )
 			{
-				w0 *= invArea;
-				w1 *= invArea;
-				w2 *= invArea;
+				float4 mmPixelPos = pixelPos;
 
-				// calculate barycentric coordinates
-				Color color =
+				for ( Uint32 i = 0; i < 4; ++i )
+				{
+					simd.m_pixelPos.Set( i, &mmPixelPos.x );
+					if ( x + i == maxX - 1 )
+					{
+						mmPixelPos.x = static_cast< Float >( minX );
+						mmPixelPos.y += 1.f;
+					}
+					else
+					{
+						mmPixelPos.x += 1.f;
+					}
+				}
+
+				simd.ComputeEdges();
+				simd.TestEdges();
+				simd.BccMulInvArea();
+				simd.CalcDepth();
+				simd.CalcPixelPos();
+			}
+
+			// check intersections
+			const Float w0 = simd.m_bcc.x[ simdIndex ];
+			const Float w1 = simd.m_bcc.y[ simdIndex ];
+			const Float w2 = simd.m_bcc.z[ simdIndex ];
+
+			if ( simd.m_pixelCol.x[ simdIndex ] &&
+				 simd.m_pixelCol.y[ simdIndex ] &&
+				 simd.m_pixelCol.z[ simdIndex ] )
+			{
+				color =
 					w0 * m_vertexColors[ 0 ]
 					+ w1 * m_vertexColors[ 1 ]
 					+ w2 * m_vertexColors[ 2 ];
 
-				const Float oneOverZ =
-					ssVerts[ 0 ].z * w0 +
-					ssVerts[ 1 ].z * w1 +
-					ssVerts[ 2 ].z * w2;
+				const Float oneOverZ = simd.m_oneOverZ.f[ simdIndex ];
 
-				const Float depth = 1.f / oneOverZ;
-
-				if ( depth > 0.1f && depth < 1000.f )
+				if ( oneOverZ > 1.f )
 				{
-					if ( depth < buffer->GetDepth( x, y ) )
+					if ( oneOverZ > buffer->GetDepth( x, y ) )
 					{
-						pixelPos = worldVerts[ 0 ] * w0
-							+ worldVerts[ 1 ] * w1
-							+ worldVerts[ 2 ] * w2;
+						pixelPos = { simd.m_wsPx.x[ simdIndex ],
+									  simd.m_wsPx.y[ simdIndex ],
+									  simd.m_wsPx.z[ simdIndex ], 0.f };
 
 						color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
-						buffer->WriteDepth( x, y, depth );
+						buffer->WriteDepth( x, y, oneOverZ );
 					}
 				}
 			}

@@ -74,7 +74,8 @@ void TgaBuffer::ClearDepth()
 	const Uint32 n = Size();
 	for ( Uint32 i = 0; i < n; ++i )
 	{
-		m_depth[ i ] = std::numeric_limits< float >::max();
+		//m_depth[ i ] = std::numeric_limits< float >::max();
+		m_depth[ i ] = 0.f;
 	}
 }
 
@@ -83,7 +84,8 @@ void TgaBuffer::Clear( Uint32 color )
 	const Uint32 n = Size();
 	for ( Uint32 i = 0; i < n; ++i )
 	{
-		m_depth[ i ] = std::numeric_limits< float >::max();
+		//m_depth[ i ] = std::numeric_limits< float >::max();
+		m_depth[ i ] = 0.f;
 		m_color[ i ] = color;
 	}
 }
