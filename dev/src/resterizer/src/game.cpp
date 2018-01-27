@@ -65,7 +65,7 @@ void Game::Tick( Float dt )
 
 	++frame;
 
-	if ( frame % 1000 )
+	if ( frame % 100 == 0 )
 	{
 		const Double fps = ( Double )frame / timer.TimeElapsed();
 		std::printf( "FPS: %f\n", fps );

@@ -38,13 +38,13 @@ public:
 	void SetNormal( const float4& normal ) { m_normal = normal; }
 	Color PixelShader( Color col, const float4& wsPos ) const;
 
-private:
 	struct
 	{
 		float4 m_pos;
 		float4 m_vsPos;
 	} m_light;
 
+private:
 	// vertex shader
 	float4x4 m_view;
 	float4x4 m_projection;

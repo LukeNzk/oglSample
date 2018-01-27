@@ -30,12 +30,12 @@ void Shader::UpdateMVP()
 
 Color Shader::PixelShader( Color col, const float4& pos ) const
 {
-	Color white( 100, 100, 100, 255 );
+	float4 L = m_light.m_vsPos - pos;
+	const Float dist2 = L.SqrMagnitude();
+	L.Normalize();
 
-	float4 L = ( m_light.m_vsPos - pos ).Normalized();
-	Float NdotL = CLAMPF_01( m_normal.Dot( L ) );
-
-	return col * NdotL;
+	const Float NdotL = 80 * CLAMPF_01( m_normal.Dot( L ) ) / dist2;
+	return ( col * NdotL );
 }
 
 void Shader::VertexShader( const float4& vert, float4& dst )
