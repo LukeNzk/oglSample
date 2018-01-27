@@ -22,7 +22,7 @@ Shader shader;
 Game::Game()
 	: m_renderTarget( new TgaBuffer( 800, 600 ) )
 {
-	Model* model = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
+	Model* model = Model::CreateCube( float4( -0.2f, -0.2f, -0.2f ), float4( 0.4f, 0.4f, 0.4f ) );
 	m_models.push_back( model );
 }
 
@@ -65,7 +65,7 @@ void Game::Tick( Float dt )
 
 	++frame;
 
-	if ( frame % 100 == 0 )
+	if ( frame % 10 == 0 )
 	{
 		const Double fps = ( Double )frame / timer.TimeElapsed();
 		std::printf( "FPS: %f\n", fps );
