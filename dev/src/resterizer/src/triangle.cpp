@@ -128,10 +128,7 @@ void TestMath()
 
 void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
-	//TestMath();
-	//shader->SetNormal( float4x4::Mul( shader->GetModelMatrix(), m_normal ) );
 	shader->SetNormal( float4x4::Mul( shader->GetMV(), m_normal ).Normalized() );
-	//shader->SetNormal( m_normal );
 
 	float4 ssVerts[ 3 ];
 	float4 worldVerts[ 3 ];
@@ -151,7 +148,8 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
 
 	// rasterization loop
-	Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
+	const Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
+	float4 pixelPos;
 
 	for ( Uint32 y = minY; y < maxY; ++y )
 	{
@@ -189,8 +187,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 				{
 					if ( depth < buffer->GetDepth( x, y ) )
 					{
-						const float4 pixelPos =
-							worldVerts[ 0 ] * w0
+						pixelPos = worldVerts[ 0 ] * w0
 							+ worldVerts[ 1 ] * w1
 							+ worldVerts[ 2 ] * w2;
 

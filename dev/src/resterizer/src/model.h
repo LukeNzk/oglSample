@@ -1,9 +1,9 @@
 #pragma once
 #include "float4x4.h"
+#include "triangle.h"
 
 #include <vector>
 
-class CTriangle;
 class ImageBuffer;
 class Shader;
 
@@ -26,5 +26,5 @@ public:
 
 private:
 	float4x4					m_transform;
-	std::vector< CTriangle* >	m_triangles;
+	std::vector< CTriangle >	m_triangles;
 };

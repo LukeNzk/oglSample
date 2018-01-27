@@ -11,11 +11,6 @@ Model::Model()
 
 Model::~Model()
 {
-	for ( Uint32 i = 0; i < m_triangles.size(); ++i )
-	{
-		delete m_triangles[ i ];
-	}
-
 	m_triangles.clear();
 }
 
@@ -91,29 +86,18 @@ Model* Model::CreateCube( const float4& pos, const float4& size )
 	const Uint32 tris = faces * 2;
 	for ( Uint32 i = 0; i < tris; ++i )
 	{
-		CTriangle* triangle = new CTriangle(
+		CTriangle triangle(
 			cube[ indices[ i * 3 ] ],
 			cube[ indices[ i * 3 + 1 ] ],
 			cube[ indices[ i * 3 + 2 ] ] );
 
-		triangle->SetVertexColor( 0, colors[ indices[ i * 3 ] ] );
-		triangle->SetVertexColor( 1, colors[ indices[ i * 3 + 1 ] ] );
-		triangle->SetVertexColor( 2, colors[ indices[ i * 3 + 2 ] ] );
-		triangle->ComputeNormal();
+		triangle.SetVertexColor( 0, colors[ indices[ i * 3 ] ] );
+		triangle.SetVertexColor( 1, colors[ indices[ i * 3 + 1 ] ] );
+		triangle.SetVertexColor( 2, colors[ indices[ i * 3 + 2 ] ] );
+		triangle.ComputeNormal();
 
 		result->m_triangles.push_back( triangle );
 	}
-
-	//CTriangle* triangle = new CTriangle(
-	//	{ 1, 1, 0, 1 },
-	//	{ 0, 0, 0, 1 },
-	//	{ 1, 0, 0, 1 } );
-
-	//triangle->SetVertexColor( 0, 0xffff0000 );
-	//triangle->SetVertexColor( 1, 0xff00ff00 );
-	//triangle->SetVertexColor( 2, 0xff0000ff );
-
-	//result->m_triangles.push_back( triangle );
 
 	return result;
 }
@@ -134,21 +118,21 @@ void Model::Draw( ImageBuffer* buffer, Shader* shader ) const
 
 	for ( Uint32 i = 0; i < m_triangles.size(); ++i )
 	{
-		m_triangles[ i ]->Draw( buffer, shader );
+		m_triangles[ i ].Draw( buffer, shader );
 	}
 }
 
 void Model::AddTriangle( const float4& a, const float4& b, const float4& c )
 {
-	CTriangle* tri = new CTriangle();
-	tri->SetVertexPos( 0, a );
-	tri->SetVertexColor( 0, Color::Red() );
+	CTriangle tri;
+	tri.SetVertexPos( 0, a );
+	tri.SetVertexColor( 0, Color::Red() );
 
-	tri->SetVertexPos( 1, b );
-	tri->SetVertexColor( 1, Color::Green() );
+	tri.SetVertexPos( 1, b );
+	tri.SetVertexColor( 1, Color::Green() );
 
-	tri->SetVertexPos( 2, c );
-	tri->SetVertexColor( 2, Color::Blue() );
+	tri.SetVertexPos( 2, c );
+	tri.SetVertexColor( 2, Color::Blue() );
 
 	m_triangles.push_back( tri );
 }
