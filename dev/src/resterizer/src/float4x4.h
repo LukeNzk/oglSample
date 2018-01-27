@@ -182,29 +182,43 @@ public:
 	{
 		float4 result;
 
-		result[ 0 ] =
-			vec.x * mat[ 0 ][ 0 ]
-			+ vec.y * mat[ 0 ][ 1 ]
-			+ vec.z * mat[ 0 ][ 2 ]
-			+ vec.w * mat[ 0 ][ 3 ];
+		const __m128 mVec = *reinterpret_cast< const __m128* >( &vec );
 
-		result[ 1 ] =
-			vec.x * mat[ 1 ][ 0 ]
-			+ vec.y * mat[ 1 ][ 1 ]
-			+ vec.z * mat[ 1 ][ 2 ]
-			+ vec.w * mat[ 1 ][ 3 ];
+		__m128 r1 = *reinterpret_cast< const __m128* >( &mat[ 0 ] );
+		r1 = _mm_mul_ps( mVec, r1 );
 
-		result[ 2 ] =
-			vec.x * mat[ 2 ][ 0 ]
-			+ vec.y * mat[ 2 ][ 1 ]
-			+ vec.z * mat[ 2 ][ 2 ]
-			+ vec.w * mat[ 2 ][ 3 ];
+		result.x =
+			r1.m128_f32[ 0 ] +
+			r1.m128_f32[ 1 ] +
+			r1.m128_f32[ 2 ] +
+			r1.m128_f32[ 3 ];
 
-		result[ 3 ] =
-			vec.x * mat[ 3 ][ 0 ]
-			+ vec.y * mat[ 3 ][ 1 ]
-			+ vec.z * mat[ 3 ][ 2 ]
-			+ vec.w * mat[ 3 ][ 3 ];
+		r1 = *reinterpret_cast< const __m128* >( &mat[ 1 ] );
+		r1 = _mm_mul_ps( mVec, r1 );
+
+		result.y =
+			r1.m128_f32[ 0 ] +
+			r1.m128_f32[ 1 ] +
+			r1.m128_f32[ 2 ] +
+			r1.m128_f32[ 3 ];
+
+		r1 = *reinterpret_cast< const __m128* >( &mat[ 2 ] );
+		r1 = _mm_mul_ps( mVec, r1 );
+
+		result.z =
+			r1.m128_f32[ 0 ] +
+			r1.m128_f32[ 1 ] +
+			r1.m128_f32[ 2 ] +
+			r1.m128_f32[ 3 ];
+
+		r1 = *reinterpret_cast< const __m128* >( &mat[ 3 ] );
+		r1 = _mm_mul_ps( mVec, r1 );
+
+		result.w =
+			r1.m128_f32[ 0 ] +
+			r1.m128_f32[ 1 ] +
+			r1.m128_f32[ 2 ] +
+			r1.m128_f32[ 3 ];
 
 		return result;
 	}

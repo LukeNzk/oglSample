@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <xmmintrin.h>
 
 #define CLAMPF_01( x ) ( ( x > 1.0f ) ? 1.0f : ( x < 0.0f ) ? 0.0f : x )
 
@@ -55,7 +56,9 @@ struct float4
 
 	inline float SqrMagnitude() const
 	{
-		return x * x + y * y + z * z;
+		__m128 a = *reinterpret_cast< const __m128* >( &x );
+		a = _mm_mul_ps( a, a );
+		return a.m128_f32[ 0 ] + a.m128_f32[ 1 ] + a.m128_f32[ 2 ];
 	}
 
 	inline float* GetPtr() 
@@ -262,9 +265,12 @@ struct float4
 			return;
 
 		const float invMag = 1.0f / mag;
-		x *= invMag;
-		y *= invMag;
-		z *= invMag;
+		__m128 a = *reinterpret_cast< const __m128* >( &x );
+		const __m128 b = { invMag, invMag, invMag, 1.f };
+		a = _mm_mul_ps( a, b );
+		x = a.m128_f32[ 0 ];
+		y = a.m128_f32[ 1 ];
+		z = a.m128_f32[ 2 ];
 	}
 
 	inline void Lerp(const float4& to, float t)
