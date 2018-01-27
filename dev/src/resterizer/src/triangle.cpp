@@ -74,6 +74,14 @@ namespace helper
 		wsPos[ 1 ] = float4x4::Mul( model, msPos[ 1 ] );
 		wsPos[ 2 ] = float4x4::Mul( model, msPos[ 2 ] );
 	}
+
+	inline void ColorToFloats( Color col, Float* floats )
+	{
+		floats[ 0 ] = col.r;
+		floats[ 1 ] = col.g;
+		floats[ 2 ] = col.b;
+		floats[ 3 ] = col.a;
+	}
 }
 
 class SIMDProcessor
@@ -122,6 +130,39 @@ public:
 		}
 	};
 
+	__declspec( align( 16 ) )
+	struct QColor
+	{
+		union
+		{
+			struct
+			{
+				__m128 r;
+				__m128 g;
+				__m128 b;
+				__m128 a;
+			} mm;
+
+			struct
+			{
+				Float r[ 4 ];
+				Float g[ 4 ];
+				Float b[ 4 ];
+				Float a[ 4 ];
+			};
+		};
+
+		void Set( Uint32 index, const Float* val )
+		{
+			r[ index ] = val[ 0 ];
+			g[ index ] = val[ 1 ];
+			b[ index ] = val[ 2 ];
+			a[ index ] = val[ 3 ];
+		}
+	};
+
+	QColor m_vColors[ 3 ];
+	QColor m_color;
 	QVec3 m_ssVerts[ 3 ];
 	QVec3 m_wsVerts[ 3 ];
 	QVec3 m_wsPx;
@@ -202,6 +243,42 @@ public:
 		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r1 );
 		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r2 );
 	}
+
+	void CalcColor()
+	{
+		static const __m128 max = { 255.f, 255.f, 255.f, 255.f };
+		static const __m128 min;
+
+		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.r );
+		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.r );
+		m_color.mm.r = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.r );
+
+		m_color.mm.r = _mm_add_ps( m_color.mm.r, r1 );
+		m_color.mm.r = _mm_add_ps( m_color.mm.r, r2 );
+
+		// clamp [0, 255]
+		m_color.mm.r = _mm_min_ps( _mm_max_ps( m_color.mm.r, min ), max );
+
+		r1 =  _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.g );
+		r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.g );
+		m_color.mm.g = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.g );
+
+		m_color.mm.g = _mm_add_ps( m_color.mm.g, r1 );
+		m_color.mm.g = _mm_add_ps( m_color.mm.g, r2 );
+
+		// clamp [0, 255]
+		m_color.mm.g = _mm_min_ps( _mm_max_ps( m_color.mm.g, min ), max );
+
+		r1 = _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.b );
+		r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.b );
+		m_color.mm.b = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.b );
+
+		m_color.mm.b = _mm_add_ps( m_color.mm.b, r1 );
+		m_color.mm.b = _mm_add_ps( m_color.mm.b, r2 );
+
+		// clamp [0, 255]
+		m_color.mm.b = _mm_min_ps( _mm_max_ps( m_color.mm.b, min ), max );
+	}
 };
 
 CTriangle::CTriangle()
@@ -281,6 +358,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	float4 pixelPos;
 	Color color;
 	SIMDProcessor simd;
+	Float colF[ 4 ];
 
 	for ( int i = 0; i < 4; ++i )
 	{
@@ -291,6 +369,15 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 		simd.m_wsVerts[ 0 ].Set( i, &worldVerts[ 0 ].x );
 		simd.m_wsVerts[ 1 ].Set( i, &worldVerts[ 1 ].x );
 		simd.m_wsVerts[ 2 ].Set( i, &worldVerts[ 2 ].x );
+		
+		helper::ColorToFloats( m_vertexColors[ 0 ], colF );
+		simd.m_vColors[ 0 ].Set( i, colF );
+
+		helper::ColorToFloats( m_vertexColors[ 1 ], colF );
+		simd.m_vColors[ 1 ].Set( i, colF );
+
+		helper::ColorToFloats( m_vertexColors[ 2 ], colF );
+		simd.m_vColors[ 2 ].Set( i, colF );
 
 		simd.m_invArea.Set( i, invArea );
 	}
@@ -328,6 +415,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 				simd.BccMulInvArea();
 				simd.CalcDepth();
 				simd.CalcPixelPos();
+				simd.CalcColor();
 			}
 
 			// check intersections
@@ -339,10 +427,9 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 				 simd.m_pixelCol.y[ simdIndex ] &&
 				 simd.m_pixelCol.z[ simdIndex ] )
 			{
-				color =
-					w0 * m_vertexColors[ 0 ]
-					+ w1 * m_vertexColors[ 1 ]
-					+ w2 * m_vertexColors[ 2 ];
+				color.Set( static_cast< Uint8 >( simd.m_color.r[ simdIndex ] ),
+						   static_cast< Uint8 >( simd.m_color.g[ simdIndex ] ),
+						   static_cast< Uint8 >( simd.m_color.b[ simdIndex ] ) );
 
 				const Float oneOverZ = simd.m_oneOverZ.f[ simdIndex ];
 
