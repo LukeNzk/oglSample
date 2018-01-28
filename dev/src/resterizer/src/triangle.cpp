@@ -2,11 +2,13 @@
 #include "imageBuffer.h"
 #include "float4x4.h"
 #include "shader.h"
+#include "simdProcessor.h"
 
 #include "../../utils/public/macros.h"
 
 #include <limits>
 #include <xmmintrin.h>
+#include <vector>
 
 namespace helper
 {
@@ -84,203 +86,6 @@ namespace helper
 	}
 }
 
-class SIMDProcessor
-{
-public:
-	__declspec( align( 16 ) )
-	struct QFloat
-	{
-		union
-		{
-			__m128 mm;
-			Float f[ 4 ];
-		};
-
-		void Set( Uint32 index, Float val )
-		{
-			f[ index ] = val;
-		}
-	};
-
-	__declspec( align( 16 ) )
-	struct QVec3
-	{
-		union
-		{
-			struct
-			{
-				__m128 x;
-				__m128 y;
-				__m128 z;
-			} mm;
-
-			struct
-			{
-				Float x[ 4 ];
-				Float y[ 4 ];
-				Float z[ 4 ];
-			};
-		};
-
-		void Set( Uint32 index, const Float* val )
-		{
-			x[ index ] = val[ 0 ];
-			y[ index ] = val[ 1 ];
-			z[ index ] = val[ 2 ];
-		}
-	};
-
-	__declspec( align( 16 ) )
-	struct QColor
-	{
-		union
-		{
-			struct
-			{
-				__m128 r;
-				__m128 g;
-				__m128 b;
-				__m128 a;
-			} mm;
-
-			struct
-			{
-				Float r[ 4 ];
-				Float g[ 4 ];
-				Float b[ 4 ];
-				Float a[ 4 ];
-			};
-		};
-
-		void Set( Uint32 index, const Float* val )
-		{
-			r[ index ] = val[ 0 ];
-			g[ index ] = val[ 1 ];
-			b[ index ] = val[ 2 ];
-			a[ index ] = val[ 3 ];
-		}
-	};
-
-	QColor m_vColors[ 3 ];
-	QColor m_color;
-	QVec3 m_ssVerts[ 3 ];
-	QVec3 m_wsVerts[ 3 ];
-	QVec3 m_wsPx;
-
-	QVec3 m_pixelPos;
-	QVec3 m_bcc; // barycentric
-	QVec3 m_pixelCol;
-
-	QFloat m_oneOverZ;
-	QFloat m_invArea;
-
-	void EdgeFunction( const QVec3* a, const QVec3* b, const QVec3* c, __m128& result )
-	{
-		//r = ( c.x - a.x ) * ( b.y - a.y ) - ( c.y - a.y ) * ( b.x - a.x );
-
-		__m128 r1 = _mm_sub_ps( c->mm.x, a->mm.x ); //( c.x - a.x )
-		__m128 r2 = _mm_sub_ps( b->mm.y, a->mm.y ); //( b.y - a.y )
-
-		result = _mm_mul_ps( r1, r2 );
-
-		r1 = _mm_sub_ps( c->mm.y, a->mm.y ); //( c.y - a.y )
-		r2 = _mm_sub_ps( b->mm.x, a->mm.x ); //( b.x - a.x )
-
-		result = _mm_sub_ps( result, _mm_mul_ps( r1, r2 ) );
-	}
-
-	void ComputeEdges()
-	{
-		EdgeFunction( &m_ssVerts[ 1 ], &m_ssVerts[ 2 ], &m_pixelPos, m_bcc.mm.x );
-		EdgeFunction( &m_ssVerts[ 2 ], &m_ssVerts[ 0 ], &m_pixelPos, m_bcc.mm.y );
-		EdgeFunction( &m_ssVerts[ 0 ], &m_ssVerts[ 1 ], &m_pixelPos, m_bcc.mm.z );
-	}
-
-	void TestEdges()
-	{
-		static const __m128 zero = { 0 };
-		m_pixelCol.mm.x = _mm_cmpge_ps( m_bcc.mm.x, zero );
-		m_pixelCol.mm.y = _mm_cmpge_ps( m_bcc.mm.y, zero );
-		m_pixelCol.mm.z = _mm_cmpge_ps( m_bcc.mm.z, zero );
-	}
-
-	void BccMulInvArea()
-	{
-		m_bcc.mm.x = _mm_mul_ps( m_bcc.mm.x, m_invArea.mm );
-		m_bcc.mm.y = _mm_mul_ps( m_bcc.mm.y, m_invArea.mm );
-		m_bcc.mm.z = _mm_mul_ps( m_bcc.mm.z, m_invArea.mm );
-	}
-
-	void CalcDepth()
-	{
-		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_ssVerts[ 0 ].mm.z );
-		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_ssVerts[ 1 ].mm.z );
-		r1 = _mm_add_ps( r1, r2 );
-		r2 = _mm_mul_ps( m_bcc.mm.z, m_ssVerts[ 2 ].mm.z );
-		m_oneOverZ.mm = _mm_add_ps( r1, r2 );
-	}
-
-	void CalcPixelPos()
-	{
-		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.x );
-		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.x );
-		m_wsPx.mm.x = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.x );
-
-		m_wsPx.mm.x = _mm_add_ps( m_wsPx.mm.x, r1 );
-		m_wsPx.mm.x = _mm_add_ps( m_wsPx.mm.x, r2 );
-
-		r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.y );
-		r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.y );
-		m_wsPx.mm.y = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.y );
-
-		m_wsPx.mm.y = _mm_add_ps( m_wsPx.mm.y, r1 );
-		m_wsPx.mm.y = _mm_add_ps( m_wsPx.mm.y, r2 );
-
-		r1 = _mm_mul_ps( m_bcc.mm.x, m_wsVerts[ 0 ].mm.z );
-		r2 = _mm_mul_ps( m_bcc.mm.y, m_wsVerts[ 1 ].mm.z );
-		m_wsPx.mm.z = _mm_mul_ps( m_bcc.mm.z, m_wsVerts[ 2 ].mm.z );
-
-		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r1 );
-		m_wsPx.mm.z = _mm_add_ps( m_wsPx.mm.z, r2 );
-	}
-
-	void CalcColor()
-	{
-		static const __m128 max = { 255.f, 255.f, 255.f, 255.f };
-		static const __m128 min;
-
-		__m128 r1 = _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.r );
-		__m128 r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.r );
-		m_color.mm.r = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.r );
-
-		m_color.mm.r = _mm_add_ps( m_color.mm.r, r1 );
-		m_color.mm.r = _mm_add_ps( m_color.mm.r, r2 );
-
-		// clamp [0, 255]
-		m_color.mm.r = _mm_min_ps( _mm_max_ps( m_color.mm.r, min ), max );
-
-		r1 =  _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.g );
-		r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.g );
-		m_color.mm.g = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.g );
-
-		m_color.mm.g = _mm_add_ps( m_color.mm.g, r1 );
-		m_color.mm.g = _mm_add_ps( m_color.mm.g, r2 );
-
-		// clamp [0, 255]
-		m_color.mm.g = _mm_min_ps( _mm_max_ps( m_color.mm.g, min ), max );
-
-		r1 = _mm_mul_ps( m_bcc.mm.x, m_vColors[ 0 ].mm.b );
-		r2 = _mm_mul_ps( m_bcc.mm.y, m_vColors[ 1 ].mm.b );
-		m_color.mm.b = _mm_mul_ps( m_bcc.mm.z, m_vColors[ 2 ].mm.b );
-
-		m_color.mm.b = _mm_add_ps( m_color.mm.b, r1 );
-		m_color.mm.b = _mm_add_ps( m_color.mm.b, r2 );
-
-		// clamp [0, 255]
-		m_color.mm.b = _mm_min_ps( _mm_max_ps( m_color.mm.b, min ), max );
-	}
-};
-
 CTriangle::CTriangle()
 {
 }
@@ -336,8 +141,8 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 {
 	shader->SetNormal( float4x4::Mul( shader->GetMV(), m_normal ).Normalized() );
 
-	float4 ssVerts[ 3 ];
-	float4 worldVerts[ 3 ];
+	static float4 ssVerts[ 3 ];
+	static float4 worldVerts[ 3 ];
 	helper::ConvertToScreenSpace( buffer, shader->GetMVP(), shader->GetMV(), m_verts, ssVerts, worldVerts );
 
 	// calculate bounds
@@ -354,35 +159,39 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 	const Uint32 maxY = helper::Clamp( 0, buffer->Height(), ( Int32 )std::floor( yMax ) );
 
 	// rasterization loop
-	const Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
-	float4 pixelPos;
-	Color color;
-	SIMDProcessor simd;
-	Float colF[ 4 ];
+	static float4 pixelPos;
+	static Color color;
+	static SIMDProcessor simd;
 
-	for ( int i = 0; i < 4; ++i )
 	{
-		simd.m_ssVerts[ 0 ].Set( i, &ssVerts[ 0 ].x );
-		simd.m_ssVerts[ 1 ].Set( i, &ssVerts[ 1 ].x );
-		simd.m_ssVerts[ 2 ].Set( i, &ssVerts[ 2 ].x );
-		
-		simd.m_wsVerts[ 0 ].Set( i, &worldVerts[ 0 ].x );
-		simd.m_wsVerts[ 1 ].Set( i, &worldVerts[ 1 ].x );
-		simd.m_wsVerts[ 2 ].Set( i, &worldVerts[ 2 ].x );
-		
-		helper::ColorToFloats( m_vertexColors[ 0 ], colF );
-		simd.m_vColors[ 0 ].Set( i, colF );
+		static Float colF[ 4 ];
+		const Float invArea = 1.f / helper::EdgeFunction( ssVerts[ 0 ], ssVerts[ 1 ], ssVerts[ 2 ] );
 
-		helper::ColorToFloats( m_vertexColors[ 1 ], colF );
-		simd.m_vColors[ 1 ].Set( i, colF );
+		for ( int i = 0; i < 4; ++i )
+		{
+			simd.m_ssVerts[ 0 ].Set( i, &ssVerts[ 0 ].x );
+			simd.m_ssVerts[ 1 ].Set( i, &ssVerts[ 1 ].x );
+			simd.m_ssVerts[ 2 ].Set( i, &ssVerts[ 2 ].x );
 
-		helper::ColorToFloats( m_vertexColors[ 2 ], colF );
-		simd.m_vColors[ 2 ].Set( i, colF );
+			simd.m_wsVerts[ 0 ].Set( i, &worldVerts[ 0 ].x );
+			simd.m_wsVerts[ 1 ].Set( i, &worldVerts[ 1 ].x );
+			simd.m_wsVerts[ 2 ].Set( i, &worldVerts[ 2 ].x );
 
-		simd.m_invArea.Set( i, invArea );
+			helper::ColorToFloats( m_vertexColors[ 0 ], colF );
+			simd.m_vColors[ 0 ].Set( i, colF );
+
+			helper::ColorToFloats( m_vertexColors[ 1 ], colF );
+			simd.m_vColors[ 1 ].Set( i, colF );
+
+			helper::ColorToFloats( m_vertexColors[ 2 ], colF );
+			simd.m_vColors[ 2 ].Set( i, colF );
+
+			simd.m_invArea.Set( i, invArea );
+		}
 	}
 
 	Uint32 pixelCount = 0;
+
 	for ( Uint32 y = minY; y < maxY; ++y )
 	{
 		for ( Uint32 x = minX; x < maxX; ++x )
@@ -392,6 +201,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 
 			int simdIndex = ( pixelCount ) % 4;
 			++pixelCount;
+
 			if ( simdIndex == 0 )
 			{
 				float4 mmPixelPos = pixelPos;
@@ -410,12 +220,7 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					}
 				}
 
-				simd.ComputeEdges();
-				simd.TestEdges();
-				simd.BccMulInvArea();
-				simd.CalcDepth();
-				simd.CalcPixelPos();
-				simd.CalcColor();
+				simd.Process();
 			}
 
 			// check intersections
@@ -438,8 +243,8 @@ void CTriangle::Draw( ImageBuffer* buffer, Shader* shader ) const
 					if ( oneOverZ > buffer->GetDepth( x, y ) )
 					{
 						pixelPos = { simd.m_wsPx.x[ simdIndex ],
-									  simd.m_wsPx.y[ simdIndex ],
-									  simd.m_wsPx.z[ simdIndex ], 0.f };
+							simd.m_wsPx.y[ simdIndex ],
+							simd.m_wsPx.z[ simdIndex ], 0.f };
 
 						color = shader->PixelShader( color, pixelPos );
 						buffer->WriteColor( x, y, color.GetARGB8() );
