@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="private\main.cpp" />
+    <ClCompile Include="private\testWindow.cpp" />
+    <ClCompile Include="private\build.cpp" />
+    <ClCompile Include="private\testFileStream.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="private\testFramework.h" />
+    <ClInclude Include="private\build.h" />
+  </ItemGroup>
+</Project>
