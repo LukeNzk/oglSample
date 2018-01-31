@@ -78,7 +78,7 @@ protected:
 		sc::FileStream fs = *sc::FileStream::Create( s_path.c_str() );
 		SC_ASSERT( sc::FileExists( s_path.c_str() ), "Failed to create test file" );
 
-		const char* content = "dupa";
+		const char* content = "test";
 		const Uint32 len = ( Uint32 )strlen( content ) + 1;
 		fs.Write( content, len );
 	}
@@ -106,7 +106,7 @@ TEST_F( FileStreamTest, ReadWrite )
 	fs->Read( buff, 5 );
 
 	EXPECT_EQ( 5, fs->GetOffset() );
-	EXPECT_EQ( 0, strcmp( "dupa", buff ) );
+	EXPECT_EQ( 0, strcmp( "tes", buff ) );
 
 	delete fs;
 }
@@ -121,7 +121,7 @@ TEST_F( FileStreamTest, Offset )
 	fs->Read( buff, 3 );
 
 	EXPECT_EQ( 5, fs->GetOffset() );
-	EXPECT_EQ( 0, strcmp( "pa", buff ) );
+	EXPECT_EQ( 0, strcmp( "st", buff ) );
 
 	delete fs;
 }

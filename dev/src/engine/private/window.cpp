@@ -127,17 +127,17 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpar
 	return winProc->WindowProc( hwnd, message, wparam, lparam );
 }
 
-CWindow::CWindow()
+MainWindow::MainWindow()
 	: m_winProc( new WindowProcedure )
 {
 }
 
-CWindow::~CWindow()
+MainWindow::~MainWindow()
 {
 	delete m_winProc;
 }
 
-bool CWindow::Create( Uint32 width, Uint32 height )
+bool MainWindow::Create( Uint32 width, Uint32 height )
 {
 	m_width = width;
 	m_height = height;
@@ -203,7 +203,7 @@ bool CWindow::Create( Uint32 width, Uint32 height )
 	return true;
 }
 
-void CWindow::Tick()
+void MainWindow::Tick()
 {
 	static MSG msg;
 
@@ -214,7 +214,7 @@ void CWindow::Tick()
 	}
 }
 
-void CWindow::SetInputManager( IInputManager* input )
+void MainWindow::SetInputManager( IInputManager* input )
 {
 	m_winProc->SetInputManager( input );
 }

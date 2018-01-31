@@ -20,7 +20,7 @@ Engine::~Engine()
 
 void Engine::Init()
 {
-	m_window.reset( new CWindow() );
+	m_window.reset( new MainWindow() );
 	m_window->Create( 800, 600 );
 
 	graphics::Init( m_window->GetNativeHandle() );

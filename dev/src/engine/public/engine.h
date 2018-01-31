@@ -3,13 +3,13 @@
 
 #include <memory>
 
-class CWindow;
+class MainWindow;
 class Renderer;
 class IGame;
 class Sprite;
 class IInputManager;
 
-typedef std::unique_ptr< CWindow > WndPtrU;
+typedef std::unique_ptr< MainWindow > WndPtrU;
 typedef std::unique_ptr< Renderer > RendererPtrU;
 
 class Engine

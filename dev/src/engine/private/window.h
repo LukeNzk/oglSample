@@ -4,13 +4,11 @@
 class IInputManager;
 class WindowProcedure;
 
-class CWindow
+class MainWindow
 {
-	friend class CEngine;
-
 public:
-	CWindow();
-	~CWindow();
+	MainWindow();
+	~MainWindow();
 
 	void SetInputManager( IInputManager* inputManager );
 	Bool Create( Uint32 width, Uint32 height );
@@ -23,6 +21,6 @@ private:
 	void*				m_hWnd;
 	WindowProcedure*	m_winProc;
 
-	int m_width;
-	int m_height;
+	Uint32 m_width;
+	Uint32 m_height;
 };
