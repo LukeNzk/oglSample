@@ -24,7 +24,7 @@ void Shader::UpdateMVP()
 	m_mv = m_view * m_model;
 	m_mvpDirty = false;
 
-	m_light.m_pos = { -2.f, 0.f, 10.f, 1.f };
+	m_light.m_pos = { -5.f, 0.f, -1.f, 1.f };
 	m_light.m_vsPos = float4x4::Mul( m_view, m_light.m_pos );
 }
 
@@ -34,7 +34,7 @@ Color Shader::PixelShader( Color col, const float4& pos ) const
 	const Float dist2 = L.SqrMagnitude();
 	L.Normalize();
 
-	const Float NdotL = 80 * CLAMPF_01( m_normal.Dot( L ) ) / dist2;
+	const Float NdotL = 50 * CLAMPF_01( m_normal.Dot( L ) ) / dist2;
 	return ( col * NdotL );
 }
 

@@ -22,7 +22,29 @@ Shader shader;
 Game::Game()
 	: m_renderTarget( new TgaBuffer( 800, 600 ) )
 {
-	Model* model = Model::CreateCube( float4( 0.0f, 0.0f, 0.f ), float4( 0.2f, 0.2f, 0.2f ) );
+	Model* model = new Model();
+	model->Load( "D:/cube.txt" );
+	model->SetPosition( { 1, 2.0f, -2.f } );
+	m_models.push_back( model );
+
+	model = new Model();
+	model->Load( "D:/sphere.txt" );
+	model->SetPosition( { 0, 0.0f, -4.f } );
+	m_models.push_back( model );
+
+	model = new Model();
+	model->Load( "D:/cube.txt" );
+	model->SetPosition( { 2, -1.0f, -1.f } );
+	m_models.push_back( model );
+
+	model = new Model();
+	model->Load( "D:/cube.txt" );
+	model->SetPosition( { 4, 1.0f, -3.f } );
+	m_models.push_back( model );
+
+	model = new Model();
+	model->Load( "D:/cube.txt" );
+	model->SetPosition( { -2, 1.0f, -3.f } );
 	m_models.push_back( model );
 }
 
