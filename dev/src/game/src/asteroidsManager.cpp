@@ -70,7 +70,8 @@ void AsteroidsManager::LoadResources( TextureManager* textures )
 
 		Asteroid* asteroid = new Asteroid;
 		asteroid->m_radius = 0.1f;
-		spr->m_scale = 0.1f;
+		spr->m_scale.x = 0.1f;
+		spr->m_scale.y = 0.1f;
 
 		m_asteroids.push_back( asteroid );
 		m_spritesPool.push_back( spr );

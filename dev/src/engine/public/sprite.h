@@ -16,8 +16,8 @@ public:
 
 public:
 	Vector2 m_position;
+	Vector2	m_scale;
 	Float	m_rotation;
-	Float	m_scale;
 
 private:
 	Uint32 m_texture;

@@ -6,7 +6,7 @@ in vec2 texcoords;
 out vec2 uvs;
 
 uniform float rot = 0;
-uniform float scale = 1;
+uniform vec2 scale;
 uniform vec2 position;
 
 uniform mat4 proj;
@@ -17,8 +17,8 @@ void main()
 	float cosRot = cos( rot );
 	float sinRot = sin( rot );
 	
-	gl_Position.x = scale * ( pos.x * cosRot - pos.y * sinRot );
-	gl_Position.y = scale * ( pos.x * sinRot + pos.y * cosRot );
+	gl_Position.x = scale.x * ( pos.x * cosRot - pos.y * sinRot );
+	gl_Position.y = scale.y * ( pos.x * sinRot + pos.y * cosRot );
 	gl_Position = proj * ( gl_Position ) + vec4( position, 0, 0 );
 	
 	uvs = texcoords;
