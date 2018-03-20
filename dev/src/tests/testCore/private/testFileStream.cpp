@@ -1,6 +1,6 @@
 #pragma once
 #include "build.h"
-#include "../../../../external/googletest/include/gtest/gtest.h"
+#include "testFramework.h"
 
 #include "../../../utils/public/fileStream.h"
 #include "../../../utils/public/fileUtils.h"
