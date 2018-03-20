@@ -2,7 +2,7 @@
 #include "macros.h"
 #include "../../../external/freeimage/x64/FreeImage.h"
 
-#pragma comment( lib, "x64/FreeImage.lib")
+#pragma comment( lib, "FreeImage.lib")
 #include <memory>
 
 namespace helper

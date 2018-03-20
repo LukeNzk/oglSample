@@ -1,19 +1,20 @@
 cmake_minimum_required (VERSION 3.1)
 
 project(game)
+find_package(FreeImage)
 
 add_executable(game
-	asteroid.cpp
-	asteroidsManager.h
-	mainGame.cpp
-	movement.cpp
-	asteroid.h
-	game.cpp
-	missilesManager.cpp
-	movement.h
-	asteroidsManager.cpp
-	game.h
-	missilesManager.h
+	src/asteroid.cpp
+	src/asteroidsManager.h
+	src/mainGame.cpp
+	src/movement.cpp
+	src/asteroid.h
+	src/game.cpp
+	src/missilesManager.cpp
+	src/movement.h
+	src/asteroidsManager.cpp
+	src/game.h
+	src/missilesManager.h
 )
 
 target_link_libraries(game engine utils)
